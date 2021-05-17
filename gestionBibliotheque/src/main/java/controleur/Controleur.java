@@ -34,6 +34,8 @@ public class Controleur extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				
 			} else if(query.contains("/actionAuteur") && request.getParameter("submit").equals("supprimer")) {
 				AuteurDAO Adao = new AuteurDAO();
 				try {
@@ -46,8 +48,10 @@ public class Controleur extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				
 			} else if(query.contains("/actionAuteur") && request.getParameter("submit").equals("modifier")) {
-				request.getRequestDispatcher("WEB-INF/modifAuteur.jsp").forward(request,response);
+				request.getRequestDispatcher("/WEB-INF/modifAuteur.jsp").forward(request,response);
 				
 
 			} else if(query.contains("/modifAuteur")) {
@@ -64,6 +68,7 @@ public class Controleur extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 
 			} else if(query.contains("/ajoutLivre")) {
 				AuteurDAO Adao = new AuteurDAO();
@@ -84,6 +89,8 @@ public class Controleur extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("supprimer")) {
 				LivreDAO Ldao = new LivreDAO();
 				try {
@@ -96,6 +103,8 @@ public class Controleur extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("modifier")) {
 				request.getRequestDispatcher("WEB-INF/modifLivre.jsp").forward(request,response);
 				
@@ -111,6 +120,7 @@ public class Controleur extends HttpServlet {
 					Livre mod = Ldao.getLivreWithId(Integer.valueOf(request.getParameter("id")));
 					mod.setTitre(request.getParameter("titre"));
 					mod.setAuteur(Adao.getAuteurWithId(Integer.valueOf(request.getParameter("id_auteur"))));
+					// Parser Date (Simple Date Format)
 					java.sql.Date date = java.sql.Date.valueOf(request.getParameter("dateParution"));
 					mod.setDateParution(date);
 					Ldao.modifierLivre(mod);
@@ -121,6 +131,7 @@ public class Controleur extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 
 			} else if(query.contains("/ajoutTagLivre")) {
 				LivreDAO Ldao = new LivreDAO();
@@ -130,17 +141,18 @@ public class Controleur extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 
 			} else if(query.contains("/indexAuteur")) {
 				request.setAttribute("indexChoix", "indexAuteur");
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 
 			} else if(query.contains("/indexLivre")) {
 				request.setAttribute("indexChoix", "indexLivre");
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 
 			}
 			
-			request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
-
 		} else {
 			
 			UtilisateurDAO Udao = new UtilisateurDAO();
@@ -149,10 +161,10 @@ public class Controleur extends HttpServlet {
 						Udao.existeUtilisateur(request.getParameter("login"))
 						&& Udao.trueLoginPassword(request.getParameter("login"), request.getParameter("password"))) {
 					session.setAttribute("APP_USER", Udao.getUtilisateurWithLoginPassword(request.getParameter("login"), request.getParameter("password")));
-					request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+					request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request, response);
 				} else {
 					// Erreur Login / Password
-					request.getRequestDispatcher("WEB-INF/login.jsp").forward(request,response);
+					request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
 				}
 			} catch (NamingException | SQLException | ServletException | IOException e) {
 				// TODO Auto-generated catch block
