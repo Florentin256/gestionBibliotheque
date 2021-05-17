@@ -47,7 +47,7 @@ public class Controleur extends HttpServlet {
 					e.printStackTrace();
 				}
 			} else if(query.contains("/actionAuteur") && request.getParameter("submit").equals("modifier")) {
-				request.getRequestDispatcher("modifAuteur.jsp").forward(request,response);
+				request.getRequestDispatcher("WEB-INF/modifAuteur.jsp").forward(request,response);
 				
 
 			} else if(query.contains("/modifAuteur")) {
@@ -97,11 +97,11 @@ public class Controleur extends HttpServlet {
 					e.printStackTrace();
 				}
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("modifier")) {
-				request.getRequestDispatcher("modifLivre.jsp").forward(request,response);
+				request.getRequestDispatcher("WEB-INF/modifLivre.jsp").forward(request,response);
 				
 
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("Ajouter des Tags")) {
-				request.getRequestDispatcher("ajouterTagLivre.jsp").forward(request,response);
+				request.getRequestDispatcher("WEB-INF/ajouterTagLivre.jsp").forward(request,response);
 				
 				
 			} else if(query.contains("/modifLivre")) {
@@ -139,7 +139,7 @@ public class Controleur extends HttpServlet {
 
 			}
 			
-			request.getRequestDispatcher("Index.jsp").forward(request,response);
+			request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 
 		} else {
 			
@@ -149,10 +149,10 @@ public class Controleur extends HttpServlet {
 						Udao.existeUtilisateur(request.getParameter("login"))
 						&& Udao.trueLoginPassword(request.getParameter("login"), request.getParameter("password"))) {
 					session.setAttribute("APP_USER", Udao.getUtilisateurWithLoginPassword(request.getParameter("login"), request.getParameter("password")));
-					request.getRequestDispatcher("Index.jsp").forward(request,response);
+					request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 				} else {
 					// Erreur Login / Password
-					request.getRequestDispatcher("login.jsp").forward(request,response);
+					request.getRequestDispatcher("WEB-INF/login.jsp").forward(request,response);
 				}
 			} catch (NamingException | SQLException | ServletException | IOException e) {
 				// TODO Auto-generated catch block
