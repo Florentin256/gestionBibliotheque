@@ -1,18 +1,27 @@
 package entites;
 
 import java.sql.Date;
+import java.util.ArrayList;
 
 public class Livre implements Comparable<Object>{
 	private String titre;
 	private Auteur auteur;
 	private Date dateParution;
 	private Integer id;
+	private ArrayList<String> tags = new ArrayList<String>();
 	
 	public Livre(String titre, Auteur auteur, Date dateParution) {
 		super();
 		this.titre = titre;
 		this.auteur = auteur;
 		this.dateParution = dateParution;
+	}
+	public Livre(String titre, Auteur auteur, Date dateParution, ArrayList<String> tags) {
+		super();
+		this.titre = titre;
+		this.auteur = auteur;
+		this.dateParution = dateParution;
+		this.tags = tags;
 	}
 	
 	public Integer getId() {
@@ -38,6 +47,9 @@ public class Livre implements Comparable<Object>{
 	}
 	public void setDateParution(Date dateParution) {
 		this.dateParution = dateParution;
+	}
+	public ArrayList<String> getTags() {
+		return tags;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@page import="entites.*,javax.naming.*,java.sql.*,javax.sql.*,java.util.*,dao.*" %>
+<%@page import="entites.*,java.util.*" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,9 +9,8 @@
 </head>
 <body>
 	<%
-	LivreDAO Ldao = new LivreDAO();
 	
-	ArrayList<String> tags = Ldao.getLivreTagWithId(Integer.valueOf(request.getParameter("id")));
+	ArrayList<String> tags = (ArrayList<String>)request.getAttribute("tagsLivre");;
 	if (tags.size() != 0) {
 		for (int j=0; j<tags.size(); j++) {
 			out.println(tags.get(j));

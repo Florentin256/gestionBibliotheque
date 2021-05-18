@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@page import="entites.*,javax.naming.*,java.sql.*,javax.sql.*,java.util.*,dao.*" %>
+<%@page import="entites.*,java.util.*" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -11,11 +11,8 @@
 <body>
 	<h1>Gestion Bibliothèque</h1>
 	<%
-	AuteurDAO Adao = new AuteurDAO();	
-	ArrayList<Auteur> listAuteurs = Adao.getAuteurs();
-	LivreDAO Ldao = new LivreDAO();
-	ArrayList<Livre> listLivres = Ldao.getLivres();
-	Collections.sort(listLivres);
+	ArrayList<Auteur> listAuteurs = (ArrayList<Auteur>)request.getAttribute("auteurs");
+	ArrayList<Livre> listLivres = (ArrayList<Livre>)request.getAttribute("livres");
 	%>
 	
 	<hr>
@@ -85,7 +82,7 @@
 						<td><%=listLivres.get(i).getAuteur().getNom() %> <%=listLivres.get(i).getAuteur().getPrenom() %></td>
 						<td>
 							<%
-							ArrayList<String> tags = Ldao.getLivreTagWithId(listLivres.get(i).getId());
+							ArrayList<String> tags = listLivres.get(i).getTags();
 							for (int j=0; j<tags.size(); j++) {
 								out.println(tags.get(j));
 							}

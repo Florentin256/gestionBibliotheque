@@ -39,7 +39,7 @@ public class LivreDAO {
 		this.rs = st.executeQuery("SELECT * FROM livre WHERE id=" + id);
 		rs.next();
 		AuteurDAO Adao = new AuteurDAO();
-		Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")), rs.getDate("date_parution"));
+		Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")), rs.getDate("date_parution"), getLivreTagWithId(id));
 		livreTemp.setId(id);
 		rs.close();
 		st.close();
@@ -60,13 +60,13 @@ public class LivreDAO {
 	public ArrayList<String> getLivreTagWithId(int id_livre) throws SQLException, NamingException {
 		init();
 		Statement st = connect.createStatement();
-		this.rs = st.executeQuery("SELECT libelle FROM tag WHERE id_livre=" + id_livre);
+		ResultSet rs2 = st.executeQuery("SELECT libelle FROM tag WHERE id_livre=" + id_livre);
 		ArrayList<String> tags = new ArrayList<String>();
-		while(this.rs.next()) {
-			tags.add(rs.getString("libelle"));
+		while(rs2.next()) {
+			tags.add(rs2.getString("libelle"));
 		}
-		rs.close();
 		st.close();
+		rs2.close();
 		connect.close();
 		return tags;
 	}
@@ -79,8 +79,9 @@ public class LivreDAO {
 		ArrayList<Livre> listLivres = new ArrayList<Livre>();
 		while(this.rs.next()) {
 			AuteurDAO Adao = new AuteurDAO();
-			Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"));
-			livreTemp.setId(rs.getInt("id"));
+			int id = rs.getInt("id");
+			Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
+			livreTemp.setId(id);
 			listLivres.add(livreTemp);
 		}
 		rs.close();
@@ -105,6 +106,9 @@ public class LivreDAO {
 	
 	public void supprimerLivre(Livre livre) throws Exception {
 		init();
+		this.stmt = connect.prepareStatement("DELETE FROM tag WHERE id_livre=?");
+		this.stmt.setInt(1, livre.getId());
+		this.stmt.executeUpdate();
 		this.stmt = connect.prepareStatement("DELETE FROM livre WHERE id=?");
 		this.stmt.setInt(1, livre.getId());
 		this.stmt.executeUpdate();

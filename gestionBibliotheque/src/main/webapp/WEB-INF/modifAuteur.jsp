@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@page import="entites.*,javax.naming.*,java.sql.*,javax.sql.*,java.util.*,dao.*" %>
+<%@page import="entites.*,java.util.*" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,17 +9,7 @@
 </head>
 <body>
 	<%
-	AuteurDAO Adao = new AuteurDAO();
-	Auteur mod = null;
-	try {
-		mod = Adao.getAuteurWithId(Integer.valueOf(request.getParameter("id")));
-	} catch (NumberFormatException | SQLException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	} catch (Exception e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+	Auteur mod = (Auteur)request.getAttribute("auteur");
 	
 	out.println("<form method='post' action='modifAuteur'>");
 	out.println("<input type='hidden' name='id' value='" + mod.getId() + "'>");
