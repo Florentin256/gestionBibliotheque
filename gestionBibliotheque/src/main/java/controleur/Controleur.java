@@ -29,7 +29,7 @@ public class Controleur extends HttpServlet {
 		if(session.getAttribute("APP_USER") != null) {
 			
 			// Initialisation des variables
-			AuteurDAO Adao = new AuteurDAO();
+			AuteurDAO Adao = new AuteurDAO(connect);
 			ArrayList<Auteur> listAuteurs = null;
 			try {
 				listAuteurs = Adao.getAuteurs();
@@ -37,7 +37,7 @@ public class Controleur extends HttpServlet {
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			}
-			LivreDAO Ldao = new LivreDAO();
+			LivreDAO Ldao = new LivreDAO(connect);
 			ArrayList<Livre> listLivres = null;
 			try {
 				listLivres = Ldao.getLivres();
@@ -209,7 +209,7 @@ public class Controleur extends HttpServlet {
 			
 		} else {
 			
-			UtilisateurDAO Udao = new UtilisateurDAO();
+			UtilisateurDAO Udao = new UtilisateurDAO(connect);
 			try {
 				if (request.getParameter("login") != null && request.getParameter("password") != null &&
 						Udao.existeUtilisateur(request.getParameter("login"))
@@ -244,7 +244,7 @@ public class Controleur extends HttpServlet {
 	public void init() throws ServletException {
 		// TODO Auto-generated method stub
 		super.init();
-		//ConnectDAO Cdao = new ConnectDAO();
-		//connect = Cdao.connect();
+		ConnectDAO Cdao = new ConnectDAO();
+		connect = Cdao.connect();
 	}
 }

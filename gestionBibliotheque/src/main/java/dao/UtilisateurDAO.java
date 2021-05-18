@@ -7,9 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.DataSource;
 
 import entites.*;
 
@@ -19,22 +17,17 @@ public class UtilisateurDAO {
 	private PreparedStatement stmt;
 	private ResultSet rs;
 	
-	public UtilisateurDAO() {}
-	
-	public void init() throws NamingException, SQLException {
-		InitialContext cxt = new InitialContext();
-		DataSource ds = (DataSource)cxt.lookup("java:/comp/env/jdbc/postgres");
-		this.connect = ds.getConnection();
+	public UtilisateurDAO(Connection connect) {
+		this.connect = connect;
 	}
 	
 	public void close() throws SQLException {
 		rs.close();
 		stmt.close();
-		connect.close();
+	
 	}
 	
 	private ArrayList<Utilisateur> getUtilisateurs() throws NamingException, SQLException {
-		init();
 		Statement st = connect.createStatement();
 		this.rs = st.executeQuery("SELECT * FROM utilisateur");
 		
@@ -45,7 +38,6 @@ public class UtilisateurDAO {
 		}
 		rs.close();
 		st.close();
-		connect.close();
 		return listUtilisateurs;
 	}
 	
@@ -60,26 +52,22 @@ public class UtilisateurDAO {
 	}
 	
 	private Utilisateur getUtilisateurWithLogin(String login) throws SQLException, NamingException {
-		init();
 		Statement st = connect.createStatement();
 		this.rs = st.executeQuery("SELECT * FROM utilisateur WHERE login='" + login + "'");
 		rs.next();
 		Utilisateur utilisateur = new Utilisateur(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
 		rs.close();
 		st.close();
-		connect.close();
 		return utilisateur;
 	}
 	
 	public Utilisateur getUtilisateurWithLoginPassword(String login, String password) throws SQLException, NamingException {
-		init();
 		Statement st = connect.createStatement();
 		this.rs = st.executeQuery("SELECT * FROM utilisateur WHERE login='" + login + "' AND password='" + password + "'");
 		rs.next();
 		Utilisateur utilisateur = new Utilisateur(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
 		rs.close();
 		st.close();
-		connect.close();
 		return utilisateur;
 	}
 	

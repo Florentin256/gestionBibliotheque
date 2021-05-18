@@ -3,9 +3,7 @@ package dao;
 import java.sql.*;
 import java.util.ArrayList;
 
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
-import javax.sql.*;
 import entites.*;
 
 public class AuteurDAO {
@@ -15,12 +13,8 @@ public class AuteurDAO {
 	private Statement stmt;
 	private ResultSet rs;
 	
-	public AuteurDAO() {}
-	
-	private void init() throws NamingException, SQLException {
-		InitialContext cxt = new InitialContext();
-		DataSource ds = (DataSource)cxt.lookup("java:/comp/env/jdbc/postgres");
-		this.connect = ds.getConnection();
+	public AuteurDAO(Connection connect) {
+		this.connect = connect;
 	}
 	
 	private void close() throws SQLException {
@@ -33,22 +27,15 @@ public class AuteurDAO {
 		if (stmt!=null) {
 			stmt.close();
 		}
-		if (connect!=null) {
-			connect.close();
-		}
 	}
 	
 	public Auteur getAuteurWithId(int id) throws SQLException {
 		Auteur auteurTemp = null;
 		try {
-			init();
 			stmt = connect.createStatement();
 			this.rs = stmt.executeQuery("SELECT * FROM auteur WHERE id=" + id);
 			rs.next();
 			auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), id);
-		} catch (NamingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -59,7 +46,6 @@ public class AuteurDAO {
 	}
 	
 	public ArrayList<Auteur> getAuteurs() throws NamingException, SQLException {
-		init();
 		stmt = connect.createStatement();
 		this.rs = stmt.executeQuery("SELECT * FROM auteur");
 		
@@ -74,7 +60,6 @@ public class AuteurDAO {
 	}
 	
 	public void ajoutAuteur(Auteur auteur) throws NamingException, SQLException {
-		init();
 		this.prepStmt = connect.prepareStatement("INSERT INTO auteur VALUES (DEFAULT,?,?)", Statement.RETURN_GENERATED_KEYS);
 		this.prepStmt.setString(1, auteur.getNom());
 		this.prepStmt.setString(2, auteur.getPrenom());
@@ -86,7 +71,6 @@ public class AuteurDAO {
 	}
 	
 	public void supprimerAuteur(Auteur auteur) throws NamingException, SQLException {
-		init();
 		this.prepStmt = connect.prepareStatement("DELETE FROM auteur WHERE id=?");
 		this.prepStmt.setInt(1, auteur.getId());
 		try {
@@ -98,7 +82,6 @@ public class AuteurDAO {
 	}
 	
 	public void modifierAuteur(Auteur auteur) throws NamingException, SQLException {
-		init();
 		this.prepStmt = connect.prepareStatement("UPDATE auteur SET nom=?, prenom=? WHERE id=?");
 		this.prepStmt.setString(1, auteur.getNom());
 		this.prepStmt.setString(2, auteur.getPrenom());

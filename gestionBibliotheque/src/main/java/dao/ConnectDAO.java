@@ -26,11 +26,8 @@ public class ConnectDAO {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		Connection connect = null;
 		try {
-			if (connect == null) {
-				connect = ds.getConnection();
-			}
+			connect = ds.getConnection();
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
