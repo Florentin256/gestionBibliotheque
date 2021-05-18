@@ -297,6 +297,9 @@ public class Controleur extends HttpServlet {
 				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 				
 				
+			} else if(query.contains("/deconnexion")) {
+				session.invalidate();
+				request.getRequestDispatcher("WEB-INF/login.jsp").forward(request,response);
 			}
 			
 		} else {
