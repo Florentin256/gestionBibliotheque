@@ -56,7 +56,19 @@ public class AuteurDAO {
 		}
 		close();
 		return listAuteurs;
+	}
+	
+	public ArrayList<Auteur> getAuteurs(int offset) throws NamingException, SQLException {
+		stmt = connect.createStatement();
+		this.rs = stmt.executeQuery("SELECT * FROM auteur limit 10 offset " + offset*10);
 		
+		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
+		while(this.rs.next()) {
+			Auteur auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), rs.getInt("id"));
+			listAuteurs.add(auteurTemp);
+		}
+		close();
+		return listAuteurs;
 	}
 	
 	public void ajoutAuteur(Auteur auteur) throws NamingException, SQLException {

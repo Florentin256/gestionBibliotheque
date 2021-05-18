@@ -76,6 +76,24 @@ public class LivreDAO {
 		
 	}
 	
+	public ArrayList<Livre> getLivres(int offset) throws NamingException, SQLException {
+		Statement st = connect.createStatement();
+		this.rs = st.executeQuery("SELECT * FROM livre order by date_parution limit 10 offset " + offset*10);
+		
+		ArrayList<Livre> listLivres = new ArrayList<Livre>();
+		while(this.rs.next()) {
+			AuteurDAO Adao = new AuteurDAO(connect);
+			int id = rs.getInt("id");
+			Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
+			livreTemp.setId(id);
+			listLivres.add(livreTemp);
+		}
+		rs.close();
+		st.close();
+		return listLivres;
+		
+	}
+	
 	public void ajoutLivre(Livre livre) throws Exception {
 		this.stmt = connect.prepareStatement("INSERT INTO livre VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 		this.stmt.setString(1, livre.getTitre());

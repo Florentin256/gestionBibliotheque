@@ -49,6 +49,11 @@ public class Controleur extends HttpServlet {
 			request.setAttribute("auteurs", listAuteurs);
 			request.setAttribute("livres", listLivres);
 			
+			//
+			
+			
+			
+			//
 			
 			if(query.contains("/ajoutAuteur")) {
 				Auteur ajout = new Auteur(request.getParameter("nom"), request.getParameter("prenom"));
@@ -198,13 +203,100 @@ public class Controleur extends HttpServlet {
 				
 			} else if(query.contains("/indexAuteur")) {
 				request.setAttribute("indexChoix", "indexAuteur");
+				request.setAttribute("numPageAuteurs", (int)0);
+				ArrayList<Auteur> listAuteursOffset = null;
+				try {
+					listAuteursOffset = Adao.getAuteurs(0);
+				} catch (NamingException | SQLException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				}
+				request.setAttribute("auteursOffset", listAuteursOffset);
 				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
 
 				
+			} else if(query.contains("/auteursPrecedents")) {
+				request.setAttribute("indexChoix", "indexAuteur");
+				int numPage = Integer.parseInt(request.getParameter("numPageAuteurs")) - 1;
+				if (numPage < 0) {
+					numPage = 0;
+				}
+				ArrayList<Auteur> listAuteursOffset = null;
+				try {
+					listAuteursOffset = Adao.getAuteurs(numPage);
+				} catch (NamingException | SQLException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				}
+				request.setAttribute("numPageAuteurs", numPage);
+				request.setAttribute("auteursOffset", listAuteursOffset);
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				
+				
+			} else if(query.contains("/auteursSuivants")) {
+				request.setAttribute("indexChoix", "indexAuteur");
+				int numPage = Integer.parseInt(request.getParameter("numPageAuteurs")) + 1;
+				request.setAttribute("numPageAuteurs", numPage);
+				
+				ArrayList<Auteur> listAuteursOffset = null;
+				try {
+					listAuteursOffset = Adao.getAuteurs(numPage);
+				} catch (NamingException | SQLException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				}
+				request.setAttribute("auteursOffset", listAuteursOffset);
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				
+				
 			} else if(query.contains("/indexLivre")) {
 				request.setAttribute("indexChoix", "indexLivre");
+				request.setAttribute("numPageLivres", (int)0);
+				ArrayList<Livre> listLivresOffset = null;
+				try {
+					listLivresOffset = Ldao.getLivres(0);
+				} catch (NamingException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				request.setAttribute("livresOffset", listLivresOffset);
 				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
-
+				
+				
+			} else if (query.contains("/livresPrecedents")) {
+				request.setAttribute("indexChoix", "indexLivre");
+				int numPage = Integer.parseInt(request.getParameter("numPageLivres")) - 1;
+				if (numPage < 0) {
+					numPage = 0;
+				}
+				ArrayList<Livre> listLivresOffset = null;
+				try {
+					listLivresOffset = Ldao.getLivres(numPage);
+				} catch (NamingException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				request.setAttribute("livresOffset", listLivresOffset);
+				request.setAttribute("numPageLivres", numPage);
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				
+				
+			} else if(query.contains("/livresSuivants")) {
+				request.setAttribute("indexChoix", "indexLivre");
+				int numPage = Integer.parseInt(request.getParameter("numPageLivres")) + 1;
+				request.setAttribute("numPageLivres", numPage);
+				
+				ArrayList<Livre> listLivresOffset = null;
+				try {
+					listLivresOffset = Ldao.getLivres(numPage);
+				} catch (NamingException | SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				request.setAttribute("livresOffset", listLivresOffset);
+				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				
+				
 			}
 			
 		} else {
