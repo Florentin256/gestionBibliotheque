@@ -1,12 +1,12 @@
 package entites;
 
-public class Utilisateur {
+public class User {
 	private String nom;
 	private String prenom;
 	private String login;
 	private String password;
 	
-	public Utilisateur(String nom, String prenom, String login, String password) {
+	public User(String nom, String prenom, String login, String password) {
 		super();
 		this.nom = nom;
 		this.prenom = prenom;

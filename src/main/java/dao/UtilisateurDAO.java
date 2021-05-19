@@ -27,13 +27,13 @@ public class UtilisateurDAO {
 	
 	}
 	
-	private ArrayList<Utilisateur> getUtilisateurs() throws NamingException, SQLException {
+	private ArrayList<User> getUtilisateurs() throws NamingException, SQLException {
 		Statement st = connect.createStatement();
 		this.rs = st.executeQuery("SELECT * FROM utilisateur");
 		
-		ArrayList<Utilisateur> listUtilisateurs = new ArrayList<Utilisateur>();
+		ArrayList<User> listUtilisateurs = new ArrayList<User>();
 		while(this.rs.next()) {
-			Utilisateur utilisateurTemp = new Utilisateur(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
+			User utilisateurTemp = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
 			listUtilisateurs.add(utilisateurTemp);
 		}
 		rs.close();
@@ -42,7 +42,7 @@ public class UtilisateurDAO {
 	}
 	
 	public boolean existeUtilisateur(String login) throws NamingException, SQLException {
-		ArrayList<Utilisateur> listUtilisateurs = getUtilisateurs();
+		ArrayList<User> listUtilisateurs = getUtilisateurs();
 		for (int i=0; i<listUtilisateurs.size(); i++) {
 			if (login.equals(listUtilisateurs.get(i).getLogin())) {
 				return true;
@@ -51,28 +51,28 @@ public class UtilisateurDAO {
 		return false;
 	}
 	
-	private Utilisateur getUtilisateurWithLogin(String login) throws SQLException, NamingException {
+	private User getUtilisateurWithLogin(String login) throws SQLException, NamingException {
 		Statement st = connect.createStatement();
 		this.rs = st.executeQuery("SELECT * FROM utilisateur WHERE login='" + login + "'");
 		rs.next();
-		Utilisateur utilisateur = new Utilisateur(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
+		User utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
 		rs.close();
 		st.close();
 		return utilisateur;
 	}
 	
-	public Utilisateur getUtilisateurWithLoginPassword(String login, String password) throws SQLException, NamingException {
+	public User getUtilisateurWithLoginPassword(String login, String password) throws SQLException, NamingException {
 		Statement st = connect.createStatement();
 		this.rs = st.executeQuery("SELECT * FROM utilisateur WHERE login='" + login + "' AND password='" + password + "'");
 		rs.next();
-		Utilisateur utilisateur = new Utilisateur(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
+		User utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
 		rs.close();
 		st.close();
 		return utilisateur;
 	}
 	
 	public boolean trueLoginPassword(String login, String password) throws SQLException, NamingException {
-		Utilisateur utilisateur = getUtilisateurWithLogin(login);
+		User utilisateur = getUtilisateurWithLogin(login);
 		if (utilisateur.getPassword().equals(password)) {
 			return true;
 		}
