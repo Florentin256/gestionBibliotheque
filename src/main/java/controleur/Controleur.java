@@ -5,7 +5,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
@@ -33,7 +32,7 @@ public class Controleur extends HttpServlet {
 			ArrayList<Auteur> listAuteurs = null;
 			try {
 				listAuteurs = Adao.getAuteurs();
-			} catch (NamingException | SQLException e3) {
+			} catch (DAOException e3) {
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			}
@@ -41,7 +40,7 @@ public class Controleur extends HttpServlet {
 			ArrayList<Livre> listLivres = null;
 			try {
 				listLivres = Ldao.getLivres();
-			} catch (NamingException | SQLException e2) {
+			} catch (DAOException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
 			}
@@ -69,7 +68,7 @@ public class Controleur extends HttpServlet {
 				try {
 					Auteur supp = Adao.getAuteurWithId(Integer.parseInt(request.getParameter("id")));
 					Adao.supprimerAuteur(supp);
-				} catch (NumberFormatException | NamingException | SQLException e) {
+				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -83,7 +82,7 @@ public class Controleur extends HttpServlet {
 				Auteur mod = null;
 				try {
 					mod = Adao.getAuteurWithId(Integer.parseInt(request.getParameter("id")));
-				} catch (NumberFormatException | SQLException e) {
+				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -100,7 +99,7 @@ public class Controleur extends HttpServlet {
 					mod.setNom(request.getParameter("nom"));
 					mod.setPrenom(request.getParameter("prenom"));
 					Adao.modifierAuteur(mod);
-				} catch (NumberFormatException | NamingException | SQLException e) {
+				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -114,7 +113,7 @@ public class Controleur extends HttpServlet {
 				Auteur aut = null;
 				try {
 					aut = Adao.getAuteurWithId(Integer.parseInt(request.getParameter("id")));
-				} catch (NumberFormatException | SQLException e1) {
+				} catch (NumberFormatException | DAOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
@@ -133,7 +132,7 @@ public class Controleur extends HttpServlet {
 				try {
 					Livre supp = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id")));
 					Ldao.supprimerLivre(supp);
-				} catch (NumberFormatException | NamingException | SQLException e) {
+				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -147,7 +146,7 @@ public class Controleur extends HttpServlet {
 				Livre mod = null;
 				try {
 					mod = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id")));
-				} catch (NumberFormatException | NamingException | SQLException e) {
+				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -161,8 +160,8 @@ public class Controleur extends HttpServlet {
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("Ajouter des Tags")) {
 				ArrayList<String> tags = null;
 				try {
-					tags = Ldao.getLivreTagWithId(Integer.parseInt(request.getParameter("id")));
-				} catch (NumberFormatException | SQLException | NamingException e) {
+					tags = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id"))).getTags();
+				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -179,7 +178,7 @@ public class Controleur extends HttpServlet {
 					java.sql.Date date = java.sql.Date.valueOf(request.getParameter("dateParution"));
 					mod.setDateParution(date);
 					Ldao.modifierLivre(mod);
-				} catch (NumberFormatException | NamingException | SQLException e) {
+				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (Exception e) {
@@ -192,7 +191,7 @@ public class Controleur extends HttpServlet {
 			} else if(query.contains("/ajoutTagLivre")) {
 				try {
 					Ldao.addLivreTagWithId(Integer.parseInt(request.getParameter("id")), request.getParameter("newTag"));
-				} catch (NumberFormatException | NamingException | SQLException e) {
+				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -205,7 +204,7 @@ public class Controleur extends HttpServlet {
 				ArrayList<Auteur> listAuteursOffset = null;
 				try {
 					listAuteursOffset = Adao.getAuteurs(0);
-				} catch (NamingException | SQLException e3) {
+				} catch (DAOException e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
 				}
@@ -222,7 +221,7 @@ public class Controleur extends HttpServlet {
 				ArrayList<Auteur> listAuteursOffset = null;
 				try {
 					listAuteursOffset = Adao.getAuteurs(numPage);
-				} catch (NamingException | SQLException e3) {
+				} catch (DAOException e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
 				}
@@ -239,7 +238,7 @@ public class Controleur extends HttpServlet {
 				ArrayList<Auteur> listAuteursOffset = null;
 				try {
 					listAuteursOffset = Adao.getAuteurs(numPage);
-				} catch (NamingException | SQLException e3) {
+				} catch (DAOException e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
 				}
@@ -253,7 +252,7 @@ public class Controleur extends HttpServlet {
 				ArrayList<Livre> listLivresOffset = null;
 				try {
 					listLivresOffset = Ldao.getLivres(0);
-				} catch (NamingException | SQLException e) {
+				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -270,7 +269,7 @@ public class Controleur extends HttpServlet {
 				ArrayList<Livre> listLivresOffset = null;
 				try {
 					listLivresOffset = Ldao.getLivres(numPage);
-				} catch (NamingException | SQLException e) {
+				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -287,7 +286,7 @@ public class Controleur extends HttpServlet {
 				ArrayList<Livre> listLivresOffset = null;
 				try {
 					listLivresOffset = Ldao.getLivres(numPage);
-				} catch (NamingException | SQLException e) {
+				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -302,7 +301,7 @@ public class Controleur extends HttpServlet {
 			
 		} else {
 			
-			UtilisateurDAO Udao = new UtilisateurDAO(connect);
+			UserDAO Udao = new UserDAO(connect);
 			try {
 				if (request.getParameter("login") != null && request.getParameter("password") != null &&
 						Udao.existeUtilisateur(request.getParameter("login"))
@@ -313,7 +312,7 @@ public class Controleur extends HttpServlet {
 					// Erreur Login / Password
 					request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
 				}
-			} catch (NamingException | SQLException | ServletException | IOException e) {
+			} catch (ServletException | IOException | DAOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -337,7 +336,13 @@ public class Controleur extends HttpServlet {
 	public void init() throws ServletException {
 		// TODO Auto-generated method stub
 		super.init();
-		ConnectDAO Cdao = new ConnectDAO();
+		ConnectDAO Cdao = null;
+		try {
+			Cdao = new ConnectDAO();
+		} catch (DAOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		connect = Cdao.connect();
 	}
 }
