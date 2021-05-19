@@ -1,6 +1,7 @@
 package dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
 
 import javax.naming.NamingException;
 
-import entites.*;
+import beans.*;
 
 public class LivreDAO {
 	
@@ -31,15 +32,14 @@ public class LivreDAO {
 		this.rs = st.executeQuery("SELECT * FROM livre WHERE id=" + id);
 		rs.next();
 		AuteurDAO Adao = new AuteurDAO(connect);
-		Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")), rs.getDate("date_parution"), getLivreTagWithId(id));
-		livreTemp.setId(id);
+		Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")), rs.getDate("date_parution"), getLivreTagWithId(id));
 		rs.close();
 		st.close();
 		return livreTemp;
 	}
 	
 	public void addLivreTagWithId(int id, String tag) throws NamingException, SQLException {
-		this.stmt = connect.prepareStatement("INSERT INTO tag VALUES (?,?)");
+		this.stmt = connect.prepareStatement("INSERT INTO tag (id_livre, libelle) VALUES (?,?)");
 		this.stmt.setInt(1, id);
 		this.stmt.setString(2, tag);
 		this.stmt.executeUpdate();
@@ -66,8 +66,7 @@ public class LivreDAO {
 		while(this.rs.next()) {
 			AuteurDAO Adao = new AuteurDAO(connect);
 			int id = rs.getInt("id");
-			Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
-			livreTemp.setId(id);
+			Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
 			listLivres.add(livreTemp);
 		}
 		rs.close();
@@ -84,8 +83,7 @@ public class LivreDAO {
 		while(this.rs.next()) {
 			AuteurDAO Adao = new AuteurDAO(connect);
 			int id = rs.getInt("id");
-			Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
-			livreTemp.setId(id);
+			Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
 			listLivres.add(livreTemp);
 		}
 		rs.close();
@@ -94,15 +92,13 @@ public class LivreDAO {
 		
 	}
 	
-	public void ajoutLivre(Livre livre) throws Exception {
-		this.stmt = connect.prepareStatement("INSERT INTO livre VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		this.stmt.setString(1, livre.getTitre());
-		this.stmt.setDate(2, livre.getDateParution());
-		this.stmt.setInt(3, livre.getAuteur().getId());
+	public void ajoutLivre(String titre, Date dateParution, int id_auteur) throws Exception {
+		this.stmt = connect.prepareStatement("INSERT INTO livre (id, titre, date_parution, auteur) VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+		this.stmt.setString(1, titre);
+		this.stmt.setDate(2, dateParution);
+		this.stmt.setInt(3, id_auteur);
 		this.stmt.executeUpdate();
 		this.rs = stmt.getGeneratedKeys();
-		this.rs.next();
-		livre.setId(this.rs.getInt(1));
 		close();
 	}
 	

@@ -4,7 +4,8 @@ import java.sql.*;
 import java.util.ArrayList;
 
 import javax.naming.NamingException;
-import entites.*;
+
+import beans.*;
 
 public class AuteurDAO {
 	
@@ -71,14 +72,12 @@ public class AuteurDAO {
 		return listAuteurs;
 	}
 	
-	public void ajoutAuteur(Auteur auteur) throws NamingException, SQLException {
-		this.prepStmt = connect.prepareStatement("INSERT INTO auteur VALUES (DEFAULT,?,?)", Statement.RETURN_GENERATED_KEYS);
-		this.prepStmt.setString(1, auteur.getNom());
-		this.prepStmt.setString(2, auteur.getPrenom());
+	public void ajoutAuteur(String nom, String prenom) throws NamingException, SQLException {
+		this.prepStmt = connect.prepareStatement("INSERT INTO auteur (id, nom, prenom) VALUES (DEFAULT,?,?)", Statement.RETURN_GENERATED_KEYS);
+		this.prepStmt.setString(1, nom);
+		this.prepStmt.setString(2, prenom);
 		this.prepStmt.executeUpdate();
 		this.rs = prepStmt.getGeneratedKeys();
-		this.rs.next();
-		auteur.setId(this.rs.getInt(1));
 		close();
 	}
 	

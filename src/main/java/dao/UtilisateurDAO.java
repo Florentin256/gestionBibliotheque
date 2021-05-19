@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import javax.naming.NamingException;
 
-import entites.*;
+import beans.*;
 
 public class UtilisateurDAO {
 
@@ -33,7 +33,7 @@ public class UtilisateurDAO {
 		
 		ArrayList<User> listUtilisateurs = new ArrayList<User>();
 		while(this.rs.next()) {
-			User utilisateurTemp = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
+			User utilisateurTemp = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
 			listUtilisateurs.add(utilisateurTemp);
 		}
 		rs.close();
@@ -55,7 +55,7 @@ public class UtilisateurDAO {
 		Statement st = connect.createStatement();
 		this.rs = st.executeQuery("SELECT * FROM utilisateur WHERE login='" + login + "'");
 		rs.next();
-		User utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
+		User utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
 		rs.close();
 		st.close();
 		return utilisateur;
@@ -65,7 +65,7 @@ public class UtilisateurDAO {
 		Statement st = connect.createStatement();
 		this.rs = st.executeQuery("SELECT * FROM utilisateur WHERE login='" + login + "' AND password='" + password + "'");
 		rs.next();
-		User utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"));
+		User utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
 		rs.close();
 		st.close();
 		return utilisateur;

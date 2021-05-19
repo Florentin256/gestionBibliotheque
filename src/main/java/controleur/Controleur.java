@@ -9,7 +9,7 @@ import javax.naming.NamingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
-import entites.*;
+import beans.*;
 import dao.*;
 
 public class Controleur extends HttpServlet {
@@ -56,9 +56,8 @@ public class Controleur extends HttpServlet {
 			//
 			
 			if(query.contains("/ajoutAuteur")) {
-				Auteur ajout = new Auteur(request.getParameter("nom"), request.getParameter("prenom"));
 				try {
-					Adao.ajoutAuteur(ajout);
+					Adao.ajoutAuteur(request.getParameter("nom"), request.getParameter("prenom"));
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -121,9 +120,8 @@ public class Controleur extends HttpServlet {
 				}
 				String dateStr = request.getParameter("dateParution");
 				java.sql.Date date = java.sql.Date.valueOf(dateStr);
-				Livre ajout = new Livre(request.getParameter("titre"), aut, date);
 				try {
-					Ldao.ajoutLivre(ajout);
+					Ldao.ajoutLivre(request.getParameter("titre"), date, aut.getId());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

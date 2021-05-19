@@ -1,55 +1,53 @@
-package entites;
+package beans;
 
 import java.sql.Date;
 import java.util.ArrayList;
 
-public class Livre implements Comparable<Object>{
+public class Livre extends Entity implements Comparable<Object>{
 	private String titre;
 	private Auteur auteur;
 	private Date dateParution;
-	private Integer id;
 	private ArrayList<String> tags = new ArrayList<String>();
 	
-	public Livre(String titre, Auteur auteur, Date dateParution) {
-		super();
-		this.titre = titre;
-		this.auteur = auteur;
-		this.dateParution = dateParution;
-	}
-	public Livre(String titre, Auteur auteur, Date dateParution, ArrayList<String> tags) {
-		super();
-		this.titre = titre;
-		this.auteur = auteur;
-		this.dateParution = dateParution;
-		this.tags = tags;
+	public Livre(Integer id, String titre, Auteur auteur, Date dateParution, ArrayList<String> tags) {
+		this.setTitre(titre);
+		this.setAuteur(auteur);
+		this.setDateParution(dateParution);
+		this.setTags(tags);
+		this.setId(id);
 	}
 	
-	public Integer getId() {
-		return id;
-	}
-	public void setId(Integer id) {
-		this.id = id;
-	}
 	public String getTitre() {
 		return titre;
 	}
 	public void setTitre(String titre) {
-		this.titre = titre;
+		if (titre != null) {
+			this.titre = titre;
+		}
 	}
 	public Auteur getAuteur() {
 		return auteur;
 	}
 	public void setAuteur(Auteur auteur) {
-		this.auteur = auteur;
+		if (auteur != null) {
+			this.auteur = auteur;
+		}
 	}
 	public Date getDateParution() {
 		return dateParution;
 	}
 	public void setDateParution(Date dateParution) {
-		this.dateParution = dateParution;
+		if (dateParution != null) {
+			this.dateParution = dateParution;
+		}
 	}
 	public ArrayList<String> getTags() {
 		return tags;
+	}
+	public void setTags(ArrayList<String> tags) {
+		if (tags != null) {
+			this.tags = tags;
+		}
 	}
 
 	@Override
