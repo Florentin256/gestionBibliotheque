@@ -1,15 +1,17 @@
 package beans;
 
-abstract class Entity {
-	private Integer id;
+abstract class Entity<Type> {
+	private Type id;
 
-	public Integer getId() {
+	public Type getId() {
 		return id;
 	}
 
-	protected void setId(Integer id) {
+	public void setId(Type id) {
 		if (id != null) {
 			this.id = id;
+		} else {
+			throw new IllegalArgumentException();
 		}
 	}
 }

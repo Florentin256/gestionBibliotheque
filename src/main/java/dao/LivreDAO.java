@@ -1,7 +1,6 @@
 package dao;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,7 +34,7 @@ public class LivreDAO {
 		}
 	}
 	
-	public Livre getLivreWithId(int id) throws DAOException {
+	public Livre getBookById(int id) throws DAOException {
 		Livre livreTemp = null;
 		Statement st = null;
 		try {
@@ -43,7 +42,7 @@ public class LivreDAO {
 			this.rs = st.executeQuery("SELECT * FROM livre WHERE id=" + id);
 			rs.next();
 			AuteurDAO Adao = new AuteurDAO(connect);
-			livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")), rs.getDate("date_parution"), getLivreTagWithId(id));
+			livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")), rs.getDate("date_parution"), getTagOfBookById(id));
 		} catch (SQLException | NamingException e) {
 			throw new DAOException("Echec de la requête");
 		} finally {
@@ -57,7 +56,7 @@ public class LivreDAO {
 		return livreTemp;
 	}
 	
-	public void addLivreTagWithId(int id, String tag) throws DAOException {
+	public void addTagToBookById(int id, String tag) throws DAOException {
 		try {
 			this.prepStmt = connect.prepareStatement("INSERT INTO tag VALUES (?,?)");
 			this.prepStmt.setInt(1, id);
@@ -72,7 +71,7 @@ public class LivreDAO {
 	
 	// Méthode private, utilise un Statement et un ResultSet séparé
 	// (appelée dans une méthode de la classe this)
-	private ArrayList<String> getLivreTagWithId(int id_livre) throws SQLException, NamingException {
+	private ArrayList<String> getTagOfBookById(int id_livre) throws SQLException, NamingException {
 		Statement st = connect.createStatement();
 		ResultSet rs2 = st.executeQuery("SELECT libelle FROM tag WHERE id_livre=" + id_livre);
 		ArrayList<String> tags = new ArrayList<String>();
@@ -84,7 +83,7 @@ public class LivreDAO {
 		return tags;
 	}
 	
-	public ArrayList<Livre> getLivres() throws DAOException {
+	public ArrayList<Livre> getBooks() throws DAOException {
 		ArrayList<Livre> listLivres = new ArrayList<Livre>();
 		try {
 			Statement st = connect.createStatement();
@@ -92,7 +91,7 @@ public class LivreDAO {
 			while(this.rs.next()) {
 				AuteurDAO Adao = new AuteurDAO(connect);
 				int id = rs.getInt("id");
-				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
+				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
 				listLivres.add(livreTemp);
 			}
 		} catch (SQLException | NamingException e) {
@@ -104,7 +103,7 @@ public class LivreDAO {
 		
 	}
 	
-	public ArrayList<Livre> getLivres(int offset) throws DAOException {
+	public ArrayList<Livre> getBooks(int offset) throws DAOException {
 		ArrayList<Livre> listLivres = new ArrayList<Livre>();
 		Statement st = null;
 		try {
@@ -114,7 +113,7 @@ public class LivreDAO {
 			while(this.rs.next()) {
 				AuteurDAO Adao = new AuteurDAO(connect);
 				int id = rs.getInt("id");
-				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
+				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
 				listLivres.add(livreTemp);
 			}
 		} catch (SQLException | NamingException e) {
@@ -132,14 +131,16 @@ public class LivreDAO {
 		
 	}
 	
-	public void ajoutLivre(String titre, Date dateParution, int id_auteur) throws DAOException {
+	public void addBook(Livre livre) throws DAOException {
 		try {
 			this.prepStmt = connect.prepareStatement("INSERT INTO livre (id, titre, date_parution, auteur) VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			this.prepStmt.setString(1, titre);
-			this.prepStmt.setDate(2, dateParution);
-			this.prepStmt.setInt(3, id_auteur);
+			this.prepStmt.setString(1, livre.getTitre());
+			this.prepStmt.setDate(2, livre.getDateParution());
+			this.prepStmt.setInt(3, livre.getAuteur().getId());
 			this.prepStmt.executeUpdate();
 			this.rs = prepStmt.getGeneratedKeys();
+			this.rs.next();
+			livre.setId(this.rs.getInt(1));
 		} catch (SQLException e) {
 			throw new DAOException("Echec de la requête");
 		} finally {
@@ -147,13 +148,13 @@ public class LivreDAO {
 		}
 	}
 	
-	public void supprimerLivre(Livre livre) throws DAOException {
+	public void removeBook(Livre livre) throws DAOException {
 		try {
 			this.prepStmt = connect.prepareStatement("DELETE FROM tag WHERE id_livre=?");
-			this.prepStmt.setInt(1, livre.getId());
+			this.prepStmt.setInt(1, (int) livre.getId());
 			this.prepStmt.executeUpdate();
 			this.prepStmt = connect.prepareStatement("DELETE FROM livre WHERE id=?");
-			this.prepStmt.setInt(1, livre.getId());
+			this.prepStmt.setInt(1, (int) livre.getId());
 			this.prepStmt.executeUpdate();
 		} catch (SQLException e) {
 			throw new DAOException("Echec de la requête");
@@ -167,8 +168,8 @@ public class LivreDAO {
 			this.prepStmt = connect.prepareStatement("UPDATE livre SET titre=?, date_parution=?, auteur=? WHERE id=?");
 			this.prepStmt.setString(1, livre.getTitre());
 			this.prepStmt.setDate(2, livre.getDateParution());
-			this.prepStmt.setInt(3, livre.getAuteur().getId());
-			this.prepStmt.setInt(4, livre.getId());
+			this.prepStmt.setInt(3, (int) livre.getAuteur().getId());
+			this.prepStmt.setInt(4, (int) livre.getId());
 			this.prepStmt.executeUpdate();
 		} catch (SQLException e) {
 			throw new DAOException("Echec de la requête");

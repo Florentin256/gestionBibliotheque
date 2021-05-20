@@ -31,7 +31,7 @@ public class Controleur extends HttpServlet {
 			AuteurDAO Adao = new AuteurDAO(connect);
 			ArrayList<Auteur> listAuteurs = null;
 			try {
-				listAuteurs = Adao.getAuteurs();
+				listAuteurs = Adao.getAuthors();
 			} catch (DAOException e3) {
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
@@ -39,7 +39,7 @@ public class Controleur extends HttpServlet {
 			LivreDAO Ldao = new LivreDAO(connect);
 			ArrayList<Livre> listLivres = null;
 			try {
-				listLivres = Ldao.getLivres();
+				listLivres = Ldao.getBooks();
 			} catch (DAOException e2) {
 				// TODO Auto-generated catch block
 				e2.printStackTrace();
@@ -55,8 +55,9 @@ public class Controleur extends HttpServlet {
 			//
 			
 			if(query.contains("/ajoutAuteur")) {
+				Auteur ajout = new Auteur(request.getParameter("nom"), request.getParameter("prenom"));
 				try {
-					Adao.ajoutAuteur(request.getParameter("nom"), request.getParameter("prenom"));
+					Adao.addAuthor(ajout);
 				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -66,8 +67,8 @@ public class Controleur extends HttpServlet {
 				
 			} else if(query.contains("/actionAuteur") && request.getParameter("submit").equals("supprimer")) {
 				try {
-					Auteur supp = Adao.getAuteurWithId(Integer.parseInt(request.getParameter("id")));
-					Adao.supprimerAuteur(supp);
+					Auteur supp = Adao.getAuthorById(Integer.parseInt(request.getParameter("id")));
+					Adao.removeAuthor(supp);
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -81,7 +82,7 @@ public class Controleur extends HttpServlet {
 			} else if(query.contains("/actionAuteur") && request.getParameter("submit").equals("modifier")) {
 				Auteur mod = null;
 				try {
-					mod = Adao.getAuteurWithId(Integer.parseInt(request.getParameter("id")));
+					mod = Adao.getAuthorById(Integer.parseInt(request.getParameter("id")));
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -95,10 +96,10 @@ public class Controleur extends HttpServlet {
 
 			} else if(query.contains("/modifAuteur")) {
 				try {
-					Auteur mod = Adao.getAuteurWithId(Integer.parseInt(request.getParameter("id")));
+					Auteur mod = Adao.getAuthorById(Integer.parseInt(request.getParameter("id")));
 					mod.setNom(request.getParameter("nom"));
 					mod.setPrenom(request.getParameter("prenom"));
-					Adao.modifierAuteur(mod);
+					Adao.updateAuthor(mod);
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -112,15 +113,16 @@ public class Controleur extends HttpServlet {
 			} else if(query.contains("/ajoutLivre")) {
 				Auteur aut = null;
 				try {
-					aut = Adao.getAuteurWithId(Integer.parseInt(request.getParameter("id")));
+					aut = Adao.getAuthorById(Integer.parseInt(request.getParameter("id")));
 				} catch (NumberFormatException | DAOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				String dateStr = request.getParameter("dateParution");
 				java.sql.Date date = java.sql.Date.valueOf(dateStr);
+				Livre ajout = new Livre(request.getParameter("titre"), aut, date);
 				try {
-					Ldao.ajoutLivre(request.getParameter("titre"), date, aut.getId());
+					Ldao.addBook(ajout);
 				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -130,8 +132,8 @@ public class Controleur extends HttpServlet {
 				
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("supprimer")) {
 				try {
-					Livre supp = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id")));
-					Ldao.supprimerLivre(supp);
+					Livre supp = Ldao.getBookById(Integer.parseInt(request.getParameter("id")));
+					Ldao.removeBook(supp);
 				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -142,7 +144,7 @@ public class Controleur extends HttpServlet {
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("modifier")) {
 				Livre mod = null;
 				try {
-					mod = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id")));
+					mod = Ldao.getBookById(Integer.parseInt(request.getParameter("id")));
 				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -154,7 +156,7 @@ public class Controleur extends HttpServlet {
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("Ajouter des Tags")) {
 				ArrayList<String> tags = null;
 				try {
-					tags = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id"))).getTags();
+					tags = Ldao.getBookById(Integer.parseInt(request.getParameter("id"))).getTags();
 				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -165,9 +167,9 @@ public class Controleur extends HttpServlet {
 				
 			} else if(query.contains("/modifLivre")) {
 				try {
-					Livre mod = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id")));
+					Livre mod = Ldao.getBookById(Integer.parseInt(request.getParameter("id")));
 					mod.setTitre(request.getParameter("titre"));
-					mod.setAuteur(Adao.getAuteurWithId(Integer.parseInt(request.getParameter("id_auteur"))));
+					mod.setAuteur(Adao.getAuthorById(Integer.parseInt(request.getParameter("id_auteur"))));
 					// Parser Date (Simple Date Format)
 					java.sql.Date date = java.sql.Date.valueOf(request.getParameter("dateParution"));
 					mod.setDateParution(date);
@@ -184,7 +186,7 @@ public class Controleur extends HttpServlet {
 				
 			} else if(query.contains("/ajoutTagLivre")) {
 				try {
-					Ldao.addLivreTagWithId(Integer.parseInt(request.getParameter("id")), request.getParameter("newTag"));
+					Ldao.addTagToBookById(Integer.parseInt(request.getParameter("id")), request.getParameter("newTag"));
 				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -197,7 +199,7 @@ public class Controleur extends HttpServlet {
 				request.setAttribute("numPageAuteurs", (int)0);
 				ArrayList<Auteur> listAuteursOffset = null;
 				try {
-					listAuteursOffset = Adao.getAuteurs(0);
+					listAuteursOffset = Adao.getAuthors(0);
 				} catch (DAOException e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
@@ -214,7 +216,7 @@ public class Controleur extends HttpServlet {
 				}
 				ArrayList<Auteur> listAuteursOffset = null;
 				try {
-					listAuteursOffset = Adao.getAuteurs(numPage);
+					listAuteursOffset = Adao.getAuthors(numPage);
 				} catch (DAOException e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
@@ -231,7 +233,7 @@ public class Controleur extends HttpServlet {
 				
 				ArrayList<Auteur> listAuteursOffset = null;
 				try {
-					listAuteursOffset = Adao.getAuteurs(numPage);
+					listAuteursOffset = Adao.getAuthors(numPage);
 				} catch (DAOException e3) {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
@@ -245,7 +247,7 @@ public class Controleur extends HttpServlet {
 				request.setAttribute("numPageLivres", (int)0);
 				ArrayList<Livre> listLivresOffset = null;
 				try {
-					listLivresOffset = Ldao.getLivres(0);
+					listLivresOffset = Ldao.getBooks(0);
 				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -262,7 +264,7 @@ public class Controleur extends HttpServlet {
 				}
 				ArrayList<Livre> listLivresOffset = null;
 				try {
-					listLivresOffset = Ldao.getLivres(numPage);
+					listLivresOffset = Ldao.getBooks(numPage);
 				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -279,7 +281,7 @@ public class Controleur extends HttpServlet {
 				
 				ArrayList<Livre> listLivresOffset = null;
 				try {
-					listLivresOffset = Ldao.getLivres(numPage);
+					listLivresOffset = Ldao.getBooks(numPage);
 				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -298,9 +300,9 @@ public class Controleur extends HttpServlet {
 			UserDAO Udao = new UserDAO(connect);
 			try {
 				if (request.getParameter("login") != null && request.getParameter("password") != null &&
-						Udao.existeUtilisateur(request.getParameter("login"))
+						Udao.existUser(request.getParameter("login"))
 						&& Udao.trueLoginPassword(request.getParameter("login"), request.getParameter("password"))) {
-					session.setAttribute("APP_USER", Udao.getUtilisateurWithLoginPassword(request.getParameter("login"), request.getParameter("password")));
+					session.setAttribute("APP_USER", Udao.getUserByLoginPassword(request.getParameter("login"), request.getParameter("password")));
 					request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request, response);
 				} else {
 					// Erreur Login / Password

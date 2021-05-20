@@ -32,7 +32,7 @@ public class UserDAO {
 		}
 	}
 	
-	private ArrayList<User> getUtilisateurs() throws DAOException {
+	private ArrayList<User> getUsers() throws DAOException {
 		ArrayList<User> listUtilisateurs = new ArrayList<User>();
 		try {
 			Statement st = connect.createStatement();
@@ -50,8 +50,8 @@ public class UserDAO {
 		return listUtilisateurs;
 	}
 	
-	public boolean existeUtilisateur(String login) throws DAOException {
-		ArrayList<User> listUtilisateurs = getUtilisateurs();
+	public boolean existUser(String login) throws DAOException {
+		ArrayList<User> listUtilisateurs = getUsers();
 		for (int i=0; i<listUtilisateurs.size(); i++) {
 			if (login.equals(listUtilisateurs.get(i).getLogin())) {
 				return true;
@@ -60,7 +60,7 @@ public class UserDAO {
 		return false;
 	}
 	
-	private User getUtilisateurWithLogin(String login) throws DAOException {
+	private User getUserByLogin(String login) throws DAOException {
 		User utilisateur = null;
 		try {
 			Statement st = connect.createStatement();
@@ -75,7 +75,7 @@ public class UserDAO {
 		return utilisateur;
 	}
 	
-	public User getUtilisateurWithLoginPassword(String login, String password) throws DAOException {
+	public User getUserByLoginPassword(String login, String password) throws DAOException {
 		User utilisateur = null;
 		try {
 			Statement st = connect.createStatement();
@@ -91,7 +91,7 @@ public class UserDAO {
 	}
 	
 	public boolean trueLoginPassword(String login, String password) throws DAOException {
-		User utilisateur = getUtilisateurWithLogin(login);
+		User utilisateur = getUserByLogin(login);
 		if (utilisateur.getPassword().equals(password)) {
 			return true;
 		}
