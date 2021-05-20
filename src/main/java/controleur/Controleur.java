@@ -57,7 +57,7 @@ public class Controleur extends HttpServlet {
 			if(query.contains("/ajoutAuteur")) {
 				try {
 					Adao.ajoutAuteur(request.getParameter("nom"), request.getParameter("prenom"));
-				} catch (Exception e) {
+				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -71,7 +71,7 @@ public class Controleur extends HttpServlet {
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (Exception e) {
+				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -85,7 +85,7 @@ public class Controleur extends HttpServlet {
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (Exception e) {
+				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -102,7 +102,7 @@ public class Controleur extends HttpServlet {
 				} catch (NumberFormatException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-				} catch (Exception e) {
+				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -121,7 +121,7 @@ public class Controleur extends HttpServlet {
 				java.sql.Date date = java.sql.Date.valueOf(dateStr);
 				try {
 					Ldao.ajoutLivre(request.getParameter("titre"), date, aut.getId());
-				} catch (Exception e) {
+				} catch (DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -132,10 +132,7 @@ public class Controleur extends HttpServlet {
 				try {
 					Livre supp = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id")));
 					Ldao.supprimerLivre(supp);
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
+				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -146,10 +143,7 @@ public class Controleur extends HttpServlet {
 				Livre mod = null;
 				try {
 					mod = Ldao.getLivreWithId(Integer.parseInt(request.getParameter("id")));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
+				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
