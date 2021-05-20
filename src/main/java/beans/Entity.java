@@ -8,10 +8,6 @@ abstract class Entity<Type> {
 	}
 
 	public void setId(Type id) {
-		if (id != null) {
-			this.id = id;
-		} else {
-			throw new IllegalArgumentException();
-		}
+		this.id = id;
 	}
 }

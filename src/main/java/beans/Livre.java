@@ -3,6 +3,8 @@ package beans;
 import java.sql.Date;
 import java.util.ArrayList;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Livre extends Entity<Integer> implements Comparable<Object>{
 	private String titre;
 	private Auteur auteur;
@@ -35,44 +37,40 @@ public class Livre extends Entity<Integer> implements Comparable<Object>{
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setTitre(String titre) {
-		if (titre != null && !titre.equals("") && !titre.replaceAll("\\s+","").equals("")) {
-			this.titre = titre;
-		} else {
+		if (titre == null || StringUtils.isBlank(titre) || StringUtils.isEmpty(titre)) {
 			throw new IllegalArgumentException();
 		}
+		this.titre = titre;
 	}
 	
 	public Auteur getAuteur() {
 		return auteur;
 	}
 	public void setAuteur(Auteur auteur) {
-		if (auteur != null) {
-			this.auteur = auteur;
-		} else {
+		if (auteur == null) {
 			throw new IllegalArgumentException();
-		}
+		} 
+		this.auteur = auteur;
 	}
 	
 	public Date getDateParution() {
 		return dateParution;
 	}
 	public void setDateParution(Date dateParution) {
-		if (dateParution != null) {
-			this.dateParution = dateParution;
-		} else {
+		if (dateParution == null) {
 			throw new IllegalArgumentException();
 		}
+		this.dateParution = dateParution;
 	}
 	
 	public ArrayList<String> getTags() {
 		return tags;
 	}
-	private void setTags(ArrayList<String> tags) {
-		if (tags != null) {
-			this.tags = tags;
-		} else {
+	protected void setTags(ArrayList<String> tags) {
+		if (tags == null) {
 			throw new IllegalArgumentException();
 		}
+		this.tags = tags;
 	}
 
 	@Override

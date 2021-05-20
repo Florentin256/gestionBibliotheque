@@ -1,5 +1,7 @@
 package beans;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class User extends Entity<Integer> {
 	private String nom;
 	private String prenom;
@@ -26,11 +28,10 @@ public class User extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setNom(String nom) {
-		if (nom != null && !nom.equals("") && !nom.replaceAll("\\s+","").equals("")) {
-			this.nom = nom;
-		} else {
+		if (nom == null || StringUtils.isBlank(nom) || StringUtils.isEmpty(nom)) {
 			throw new IllegalArgumentException();
 		}
+		this.nom = nom;
 	}
 	
 	public String getPrenom() {
@@ -45,11 +46,10 @@ public class User extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setPrenom(String prenom) {
-		if (prenom != null && !prenom.equals("") && !prenom.replaceAll("\\s+","").equals("")) {
-			this.prenom = prenom;
-		} else {
+		if (prenom == null || StringUtils.isBlank(prenom) || StringUtils.isEmpty(prenom)) {
 			throw new IllegalArgumentException();
 		}
+		this.prenom = prenom;
 	}
 	
 	public String getLogin() {
@@ -64,11 +64,10 @@ public class User extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setLogin(String login) {
-		if (login != null && !login.equals("") && !login.replaceAll("\\s+","").equals("")) {
-			this.login = login;
-		} else {
+		if (login == null || StringUtils.isBlank(login) || StringUtils.isEmpty(login)) {
 			throw new IllegalArgumentException();
 		}
+		this.login = login;
 	}
 	
 	public String getPassword() {
@@ -83,10 +82,9 @@ public class User extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setPassword(String password) {
-		if (password != null && !password.equals("") && !password.replaceAll("\\s+","").equals("")) {
-			this.password = password;
-		} else {
+		if (password == null || StringUtils.isBlank(password) || StringUtils.isEmpty(password)) {
 			throw new IllegalArgumentException();
 		}
+		this.password = password;
 	}
 }

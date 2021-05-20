@@ -1,5 +1,7 @@
 package beans;
 
+import org.apache.commons.lang3.StringUtils;
+
 public class Auteur extends Entity<Integer> {
 	private String nom;
 	private String prenom;
@@ -27,11 +29,10 @@ public class Auteur extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setNom(String nom) {
-		if (nom != null && !nom.equals("") && !nom.replaceAll("\\s+","").equals("")) {
-			this.nom = nom;
-		} else {
+		if (nom == null || StringUtils.isBlank(nom) || StringUtils.isEmpty(nom)) {
 			throw new IllegalArgumentException();
 		}
+		this.nom = nom;
 	}
 	
 	public String getPrenom() {
@@ -46,10 +47,9 @@ public class Auteur extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setPrenom(String prenom) {
-		if (prenom != null && !prenom.equals("") && !prenom.replaceAll("\\s+","").equals("")) {
-			this.prenom = prenom;
-		} else {
+		if (prenom == null || StringUtils.isBlank(prenom) || StringUtils.isEmpty(prenom)) {
 			throw new IllegalArgumentException();
 		}
+		this.prenom = prenom;
 	}
 }
