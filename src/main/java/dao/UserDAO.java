@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import beans.*;
 
-public class UserDAO {
+public class UserDAO implements StandardCRUD<User> {
 
 	private Connection connect;
 	private PreparedStatement stmt;
@@ -32,7 +32,14 @@ public class UserDAO {
 		}
 	}
 	
-	private ArrayList<User> getUsers() throws DAOException {
+	@Override
+	public User getById(Object id) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ArrayList<User> getAll() throws DAOException {
 		ArrayList<User> listUtilisateurs = new ArrayList<User>();
 		try {
 			Statement st = connect.createStatement();
@@ -49,9 +56,34 @@ public class UserDAO {
 		}
 		return listUtilisateurs;
 	}
+
+	@Override
+	public ArrayList<User> getAll(int offset) throws DAOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void add(User obj) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void remove(User obj) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(User obj) throws DAOException {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	
 	public boolean existUser(String login) throws DAOException {
-		ArrayList<User> listUtilisateurs = getUsers();
+		ArrayList<User> listUtilisateurs = getAll();
 		for (int i=0; i<listUtilisateurs.size(); i++) {
 			if (login.equals(listUtilisateurs.get(i).getLogin())) {
 				return true;
