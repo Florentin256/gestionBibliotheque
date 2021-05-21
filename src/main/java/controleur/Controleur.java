@@ -174,10 +174,7 @@ public class Controleur extends HttpServlet {
 					java.sql.Date date = java.sql.Date.valueOf(request.getParameter("dateParution"));
 					mod.setDateParution(date);
 					Ldao.update(mod);
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
+				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
