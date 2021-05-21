@@ -2,6 +2,7 @@ package beans;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,9 +10,9 @@ public class Livre extends Entity<Integer> implements Comparable<Object>{
 	private String titre;
 	private Auteur auteur;
 	private Date dateParution;
-	private ArrayList<String> tags = new ArrayList<String>();
+	private List<String> tags = new ArrayList<String>();
 	
-	public Livre(Integer id, String titre, Auteur auteur, Date dateParution, ArrayList<String> tags) {
+	public Livre(Integer id, String titre, Auteur auteur, Date dateParution, List<String> tags) {
 		this.setTitre(titre);
 		this.setAuteur(auteur);
 		this.setDateParution(dateParution);
@@ -37,8 +38,8 @@ public class Livre extends Entity<Integer> implements Comparable<Object>{
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setTitre(String titre) {
-		if (titre == null || StringUtils.isBlank(titre) || StringUtils.isEmpty(titre)) {
-			throw new IllegalArgumentException();
+		if (StringUtils.isBlank(titre)) {
+			throw new IllegalArgumentException("title cannot be null");
 		}
 		this.titre = titre;
 	}
@@ -48,7 +49,7 @@ public class Livre extends Entity<Integer> implements Comparable<Object>{
 	}
 	public void setAuteur(Auteur auteur) {
 		if (auteur == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("author cannot be null");
 		} 
 		this.auteur = auteur;
 	}
@@ -58,17 +59,17 @@ public class Livre extends Entity<Integer> implements Comparable<Object>{
 	}
 	public void setDateParution(Date dateParution) {
 		if (dateParution == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("publishing date cannot be null");
 		}
 		this.dateParution = dateParution;
 	}
 	
-	public ArrayList<String> getTags() {
+	public List<String> getTags() {
 		return tags;
 	}
-	protected void setTags(ArrayList<String> tags) {
+	protected void setTags(List<String> tags) {
 		if (tags == null) {
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("tags cannot be null");
 		}
 		this.tags = tags;
 	}

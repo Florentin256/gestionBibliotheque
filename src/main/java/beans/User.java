@@ -16,6 +16,13 @@ public class User extends Entity<Integer> {
 		this.setId(id);
 	}
 	
+	public User(String nom, String prenom, String login, String password) {
+		this.setNom(nom);
+		this.setPrenom(prenom);
+		this.setLogin(login);
+		this.setPassword(password);
+	}
+	
 	public String getNom() {
 		return nom;
 	}
@@ -28,8 +35,8 @@ public class User extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setNom(String nom) {
-		if (nom == null || StringUtils.isBlank(nom) || StringUtils.isEmpty(nom)) {
-			throw new IllegalArgumentException();
+		if (StringUtils.isBlank(nom)) {
+			throw new IllegalArgumentException("name cannot be null");
 		}
 		this.nom = nom;
 	}
@@ -46,8 +53,8 @@ public class User extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setPrenom(String prenom) {
-		if (prenom == null || StringUtils.isBlank(prenom) || StringUtils.isEmpty(prenom)) {
-			throw new IllegalArgumentException();
+		if (StringUtils.isBlank(prenom)) {
+			throw new IllegalArgumentException("firstname cannot be null");
 		}
 		this.prenom = prenom;
 	}
@@ -64,8 +71,8 @@ public class User extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setLogin(String login) {
-		if (login == null || StringUtils.isBlank(login) || StringUtils.isEmpty(login)) {
-			throw new IllegalArgumentException();
+		if (StringUtils.isBlank(login)) {
+			throw new IllegalArgumentException("login cannot be null");
 		}
 		this.login = login;
 	}
@@ -82,8 +89,8 @@ public class User extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setPassword(String password) {
-		if (password == null || StringUtils.isBlank(password) || StringUtils.isEmpty(password)) {
-			throw new IllegalArgumentException();
+		if (StringUtils.isBlank(password)) {
+			throw new IllegalArgumentException("password cannot be null");
 		}
 		this.password = password;
 	}

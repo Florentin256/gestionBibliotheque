@@ -156,7 +156,7 @@ public class Controleur extends HttpServlet {
 			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("Ajouter des Tags")) {
 				ArrayList<String> tags = null;
 				try {
-					tags = Ldao.getBookById(Integer.parseInt(request.getParameter("id"))).getTags();
+					tags = (ArrayList<String>) Ldao.getBookById(Integer.parseInt(request.getParameter("id"))).getTags();
 				} catch (NumberFormatException | DAOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

@@ -29,8 +29,8 @@ public class Auteur extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setNom(String nom) {
-		if (nom == null || StringUtils.isBlank(nom) || StringUtils.isEmpty(nom)) {
-			throw new IllegalArgumentException();
+		if (StringUtils.isBlank(nom)) {
+			throw new IllegalArgumentException("name cannot be null");
 		}
 		this.nom = nom;
 	}
@@ -47,8 +47,8 @@ public class Auteur extends Entity<Integer> {
 	 * 		Si le parametre est null, constitue une chaine vide ou est remplie de caracteres d'espacements
 	 */
 	public void setPrenom(String prenom) {
-		if (prenom == null || StringUtils.isBlank(prenom) || StringUtils.isEmpty(prenom)) {
-			throw new IllegalArgumentException();
+		if (StringUtils.isBlank(prenom)) {
+			throw new IllegalArgumentException("firstname cannot be null");
 		}
 		this.prenom = prenom;
 	}
