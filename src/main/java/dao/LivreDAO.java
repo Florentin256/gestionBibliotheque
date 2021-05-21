@@ -9,44 +9,69 @@ import java.util.ArrayList;
 
 import javax.naming.NamingException;
 
-import entites.*;
+import beans.*;
 
 public class LivreDAO {
 	
 	private Connection connect;
-	private PreparedStatement stmt;
+	private PreparedStatement prepStmt;
 	private ResultSet rs;
 	
 	public LivreDAO(Connection connect) {
 		this.connect = connect;
 	}
 	
-	public void close() throws SQLException {
-		rs.close();
-		stmt.close();
+	private void close() throws DAOException {
+		try {
+			if (rs!=null) {
+				rs.close();
+			}
+			if (prepStmt!=null) {
+				prepStmt.close();
+			}
+		} catch (SQLException e) {
+			throw new DAOException("Echec de fermeture des Statement et ResultSet");
+		}
 	}
 	
-	public Livre getLivreWithId(int id) throws NamingException, SQLException {
-		Statement st = connect.createStatement();
-		this.rs = st.executeQuery("SELECT * FROM livre WHERE id=" + id);
-		rs.next();
-		AuteurDAO Adao = new AuteurDAO(connect);
-		Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")), rs.getDate("date_parution"), getLivreTagWithId(id));
-		livreTemp.setId(id);
-		rs.close();
-		st.close();
+	public Livre getBookById(int id) throws DAOException {
+		Livre livreTemp = null;
+		Statement st = null;
+		try {
+			st = connect.createStatement();
+			this.rs = st.executeQuery("SELECT * FROM livre WHERE id=" + id);
+			rs.next();
+			AuteurDAO Adao = new AuteurDAO(connect);
+			livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")), rs.getDate("date_parution"), getTagOfBookById(id));
+		} catch (SQLException | NamingException e) {
+			throw new DAOException("Echec de la requête");
+		} finally {
+			try {
+				st.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return livreTemp;
 	}
 	
-	public void addLivreTagWithId(int id, String tag) throws NamingException, SQLException {
-		this.stmt = connect.prepareStatement("INSERT INTO tag VALUES (?,?)");
-		this.stmt.setInt(1, id);
-		this.stmt.setString(2, tag);
-		this.stmt.executeUpdate();
-		stmt.close();
+	public void addTagToBookById(int id, String tag) throws DAOException {
+		try {
+			this.prepStmt = connect.prepareStatement("INSERT INTO tag VALUES (?,?)");
+			this.prepStmt.setInt(1, id);
+			this.prepStmt.setString(2, tag);
+			this.prepStmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new DAOException("Echec de la requête");
+		} finally {
+			close();
+		}
 	}
 	
-	public ArrayList<String> getLivreTagWithId(int id_livre) throws SQLException, NamingException {
+	// Méthode private, utilise un Statement et un ResultSet séparé
+	// (appelée dans une méthode de la classe this)
+	private ArrayList<String> getTagOfBookById(int id_livre) throws SQLException, NamingException {
 		Statement st = connect.createStatement();
 		ResultSet rs2 = st.executeQuery("SELECT libelle FROM tag WHERE id_livre=" + id_livre);
 		ArrayList<String> tags = new ArrayList<String>();
@@ -58,71 +83,98 @@ public class LivreDAO {
 		return tags;
 	}
 	
-	public ArrayList<Livre> getLivres() throws NamingException, SQLException {
-		Statement st = connect.createStatement();
-		this.rs = st.executeQuery("SELECT * FROM livre");
-		
+	public ArrayList<Livre> getBooks() throws DAOException {
 		ArrayList<Livre> listLivres = new ArrayList<Livre>();
-		while(this.rs.next()) {
-			AuteurDAO Adao = new AuteurDAO(connect);
-			int id = rs.getInt("id");
-			Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
-			livreTemp.setId(id);
-			listLivres.add(livreTemp);
+		try {
+			Statement st = connect.createStatement();
+			this.rs = st.executeQuery("SELECT * FROM livre");
+			while(this.rs.next()) {
+				AuteurDAO Adao = new AuteurDAO(connect);
+				int id = rs.getInt("id");
+				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
+				listLivres.add(livreTemp);
+			}
+		} catch (SQLException | NamingException e) {
+			throw new DAOException("Echec de la requête");
+		} finally {
+			close();
 		}
-		rs.close();
-		st.close();
 		return listLivres;
 		
 	}
 	
-	public ArrayList<Livre> getLivres(int offset) throws NamingException, SQLException {
-		Statement st = connect.createStatement();
-		this.rs = st.executeQuery("SELECT * FROM livre order by date_parution limit 10 offset " + offset*10);
-		
+	public ArrayList<Livre> getBooks(int offset) throws DAOException {
 		ArrayList<Livre> listLivres = new ArrayList<Livre>();
-		while(this.rs.next()) {
-			AuteurDAO Adao = new AuteurDAO(connect);
-			int id = rs.getInt("id");
-			Livre livreTemp = new Livre(rs.getString("titre"), Adao.getAuteurWithId(rs.getInt("auteur")),rs.getDate("date_parution"), getLivreTagWithId(id));
-			livreTemp.setId(id);
-			listLivres.add(livreTemp);
+		Statement st = null;
+		try {
+			st = connect.createStatement();
+			this.rs = st.executeQuery("SELECT * FROM livre order by date_parution limit 10 offset " + offset*10);
+			
+			while(this.rs.next()) {
+				AuteurDAO Adao = new AuteurDAO(connect);
+				int id = rs.getInt("id");
+				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
+				listLivres.add(livreTemp);
+			}
+		} catch (SQLException | NamingException e) {
+			throw new DAOException("Echec de la requête");
+		} finally {
+			close();
+			try {
+				st.close();
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		rs.close();
-		st.close();
 		return listLivres;
 		
 	}
 	
-	public void ajoutLivre(Livre livre) throws Exception {
-		this.stmt = connect.prepareStatement("INSERT INTO livre VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		this.stmt.setString(1, livre.getTitre());
-		this.stmt.setDate(2, livre.getDateParution());
-		this.stmt.setInt(3, livre.getAuteur().getId());
-		this.stmt.executeUpdate();
-		this.rs = stmt.getGeneratedKeys();
-		this.rs.next();
-		livre.setId(this.rs.getInt(1));
-		close();
+	public void addBook(Livre livre) throws DAOException {
+		try {
+			this.prepStmt = connect.prepareStatement("INSERT INTO livre (id, titre, date_parution, auteur) VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			this.prepStmt.setString(1, livre.getTitre());
+			this.prepStmt.setDate(2, livre.getDateParution());
+			this.prepStmt.setInt(3, livre.getAuteur().getId());
+			this.prepStmt.executeUpdate();
+			this.rs = prepStmt.getGeneratedKeys();
+			this.rs.next();
+			livre.setId(this.rs.getInt(1));
+		} catch (SQLException e) {
+			throw new DAOException("Echec de la requête");
+		} finally {
+			close();
+		}
 	}
 	
-	public void supprimerLivre(Livre livre) throws Exception {
-		this.stmt = connect.prepareStatement("DELETE FROM tag WHERE id_livre=?");
-		this.stmt.setInt(1, livre.getId());
-		this.stmt.executeUpdate();
-		this.stmt = connect.prepareStatement("DELETE FROM livre WHERE id=?");
-		this.stmt.setInt(1, livre.getId());
-		this.stmt.executeUpdate();
-		close();
+	public void removeBook(Livre livre) throws DAOException {
+		try {
+			this.prepStmt = connect.prepareStatement("DELETE FROM tag WHERE id_livre=?");
+			this.prepStmt.setInt(1, (int) livre.getId());
+			this.prepStmt.executeUpdate();
+			this.prepStmt = connect.prepareStatement("DELETE FROM livre WHERE id=?");
+			this.prepStmt.setInt(1, (int) livre.getId());
+			this.prepStmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new DAOException("Echec de la requête");
+		} finally {
+			close();
+		}
 	}
 	
-	public void modifierLivre(Livre livre) throws Exception {
-		this.stmt = connect.prepareStatement("UPDATE livre SET titre=?, date_parution=?, auteur=? WHERE id=?");
-		this.stmt.setString(1, livre.getTitre());
-		this.stmt.setDate(2, livre.getDateParution());
-		this.stmt.setInt(3, livre.getAuteur().getId());
-		this.stmt.setInt(4, livre.getId());
-		this.stmt.executeUpdate();
-		close();
+	public void modifierLivre(Livre livre) throws DAOException {
+		try {
+			this.prepStmt = connect.prepareStatement("UPDATE livre SET titre=?, date_parution=?, auteur=? WHERE id=?");
+			this.prepStmt.setString(1, livre.getTitre());
+			this.prepStmt.setDate(2, livre.getDateParution());
+			this.prepStmt.setInt(3, (int) livre.getAuteur().getId());
+			this.prepStmt.setInt(4, (int) livre.getId());
+			this.prepStmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new DAOException("Echec de la requête");
+		} finally {
+			close();
+		}
 	}
 }
