@@ -3,7 +3,6 @@ package controleur;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
@@ -17,7 +16,6 @@ public class Controleur extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private static Connection connect;
 	
 	public Controleur() {}
 	
@@ -28,7 +26,7 @@ public class Controleur extends HttpServlet {
 		if(session.getAttribute("APP_USER") != null) {
 			
 			// Initialisation des variables
-			AuteurDAO Adao = new AuteurDAO(connect);
+			AuteurDAO Adao = new AuteurDAO();
 			ArrayList<Auteur> listAuteurs = null;
 			try {
 				listAuteurs = Adao.getAuthors();
@@ -36,7 +34,7 @@ public class Controleur extends HttpServlet {
 				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			}
-			LivreDAO Ldao = new LivreDAO(connect);
+			LivreDAO Ldao = new LivreDAO();
 
 			request.setAttribute("auteurs", listAuteurs);
 			
@@ -287,7 +285,7 @@ public class Controleur extends HttpServlet {
 			
 		} else {
 			
-			UserDAO Udao = new UserDAO(connect);
+			UserDAO Udao = new UserDAO();
 			try {
 				if (request.getParameter("login") != null && request.getParameter("password") != null &&
 						Udao.existUser(request.getParameter("login"))
@@ -304,31 +302,5 @@ public class Controleur extends HttpServlet {
 			}
 		}
 
-	}
-
-	@Override
-	public void destroy() {
-		// TODO Auto-generated method stub
-		super.destroy();
-		try {
-			connect.close();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	@Override
-	public void init() throws ServletException {
-		// TODO Auto-generated method stub
-		super.init();
-		ConnectDAO Cdao = null;
-		try {
-			Cdao = new ConnectDAO();
-		} catch (DaoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		connect = Cdao.connect();
 	}
 }

@@ -9,19 +9,5 @@ import javax.sql.DataSource;
 
 public class ConnectDAO {
 	
-	private static Connection connect = null;
-	
-	public ConnectDAO() throws DaoException {
-		try {
-			InitialContext cxt = new InitialContext();
-			DataSource ds = (DataSource)cxt.lookup("java:/comp/env/jdbc/postgres");
-			connect = ds.getConnection();
-		} catch (NamingException | SQLException e) {
-			throw new DaoException("Echec de connexion à la datasource");
-		}
-	}
-	
-	public Connection connect() {
-		return connect;
-	}
+
 }

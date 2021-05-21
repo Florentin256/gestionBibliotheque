@@ -1,7 +1,6 @@
 package dao;
 
 import java.sql.Statement;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,14 +12,11 @@ import beans.Auteur;
 
 public class AuteurDAO implements DAO<Auteur, Integer> {
 	
-	private Connection connect;
 	private PreparedStatement prepStmt;
 	private Statement stmt;
 	private ResultSet rs;
 	
-	public AuteurDAO(Connection connect) {
-		this.connect = connect;
-	}
+	public AuteurDAO() {}
 	
 	private void close() throws DaoException {
 		try {
@@ -41,7 +37,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	public ArrayList<Auteur> getAuthors() throws DaoException {
 		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
 		try {
-			stmt = connect.createStatement();
+			stmt = ConnectionHandler.getConnection().createStatement();
 			this.rs = stmt.executeQuery("SELECT * FROM auteur");
 			
 			while(this.rs.next()) {
@@ -63,7 +59,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	public Auteur getById(Integer id) throws DaoException {
 		Auteur auteurTemp = null;
 		try {
-			stmt = (Statement) connect.createStatement();
+			stmt = (Statement) ConnectionHandler.getConnection().createStatement();
 			this.rs = stmt.executeQuery("SELECT * FROM auteur WHERE id=" + id);
 			rs.next();
 			auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), (int)id);
@@ -79,7 +75,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	public List<Auteur> getAll(Pagination pagination) throws DaoException {
 		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
 		try {
-			stmt = connect.createStatement();
+			stmt = ConnectionHandler.getConnection().createStatement();
 			this.rs = stmt.executeQuery("SELECT * FROM auteur limit" + pagination.getLimit() + " offset " + pagination.getOffset()*pagination.getLimit());
 			
 			while(this.rs.next()) {
@@ -97,7 +93,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	@Override
 	public void add(Auteur entity) throws DaoException {
 		try {
-			this.prepStmt = connect.prepareStatement("INSERT INTO auteur (id, nom, prenom) VALUES (DEFAULT,?,?)", Statement.RETURN_GENERATED_KEYS);
+			this.prepStmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO auteur (id, nom, prenom) VALUES (DEFAULT,?,?)", Statement.RETURN_GENERATED_KEYS);
 			this.prepStmt.setString(1, entity.getNom());
 			this.prepStmt.setString(2, entity.getPrenom());
 			this.prepStmt.executeUpdate();
@@ -114,7 +110,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	@Override
 	public void remove(Integer id) throws DaoException {
 		try {
-			this.prepStmt = connect.prepareStatement("DELETE FROM auteur WHERE id=?");
+			this.prepStmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM auteur WHERE id=?");
 			this.prepStmt.setInt(1, (int)id);
 			try {
 				this.prepStmt.executeUpdate();
@@ -132,7 +128,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	@Override
 	public void update(Auteur entity) throws DaoException {
 		try {
-			this.prepStmt = connect.prepareStatement("UPDATE auteur SET nom=?, prenom=? WHERE id=?");
+			this.prepStmt = ConnectionHandler.getConnection().prepareStatement("UPDATE auteur SET nom=?, prenom=? WHERE id=?");
 			this.prepStmt.setString(1, entity.getNom());
 			this.prepStmt.setString(2, entity.getPrenom());
 			this.prepStmt.setInt(3, (int) entity.getId());
