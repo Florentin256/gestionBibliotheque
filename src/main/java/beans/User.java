@@ -16,6 +16,13 @@ public class User extends Entity<Integer> {
 		this.setId(id);
 	}
 	
+	public User(String nom, String prenom, String login, String password) {
+		this.setNom(nom);
+		this.setPrenom(prenom);
+		this.setLogin(login);
+		this.setPassword(password);
+	}
+	
 	public String getNom() {
 		return nom;
 	}
