@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import beans.Auteur;
 
 
-public class AuteurDAO {
+public class AuteurDAO implements StandardCRUD<Auteur> {
 	
 	private Connection connect;
 	private PreparedStatement prepStmt;
@@ -37,13 +37,14 @@ public class AuteurDAO {
 		}
 	}
 	
-	public Auteur getAuthorById(int id) throws DAOException {
+	@Override
+	public Auteur getById(Object id) throws DAOException {
 		Auteur auteurTemp = null;
 		try {
 			stmt = (Statement) connect.createStatement();
 			this.rs = stmt.executeQuery("SELECT * FROM auteur WHERE id=" + id);
 			rs.next();
-			auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), id);
+			auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), (int)id);
 		} catch (SQLException e) {
 			throw new DAOException("Echec de la requête");
 		} finally {
@@ -52,7 +53,8 @@ public class AuteurDAO {
 		return auteurTemp;
 	}
 	
-	public ArrayList<Auteur> getAuthors() throws DAOException {
+	@Override
+	public ArrayList<Auteur> getAll() throws DAOException {
 		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
 		try {
 			stmt = connect.createStatement();
@@ -70,7 +72,8 @@ public class AuteurDAO {
 		return listAuteurs;
 	}
 	
-	public ArrayList<Auteur> getAuthors(int offset) throws DAOException {
+	@Override
+	public ArrayList<Auteur> getAll(int offset) throws DAOException {
 		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
 		try {
 			stmt = connect.createStatement();
@@ -87,27 +90,29 @@ public class AuteurDAO {
 		}
 		return listAuteurs;
 	}
-	
-	public void addAuthor(Auteur auteur) throws DAOException  {
+
+	@Override
+	public void add(Auteur obj) throws DAOException {
 		try {
 			this.prepStmt = connect.prepareStatement("INSERT INTO auteur (id, nom, prenom) VALUES (DEFAULT,?,?)", Statement.RETURN_GENERATED_KEYS);
-			this.prepStmt.setString(1, auteur.getNom());
-			this.prepStmt.setString(2, auteur.getPrenom());
+			this.prepStmt.setString(1, obj.getNom());
+			this.prepStmt.setString(2, obj.getPrenom());
 			this.prepStmt.executeUpdate();
 			this.rs = prepStmt.getGeneratedKeys();
 			this.rs.next();
-			auteur.setId(this.rs.getInt(1));
+			obj.setId(this.rs.getInt(1));
 		} catch (SQLException e) {
 			throw new DAOException("Echec d'insertion dans la base");
 		} finally {
 			close();
 		}
 	}
-	
-	public void removeAuthor(Auteur auteur) throws DAOException {
+
+	@Override
+	public void remove(Auteur obj) throws DAOException {
 		try {
 			this.prepStmt = connect.prepareStatement("DELETE FROM auteur WHERE id=?");
-			this.prepStmt.setInt(1, (int) auteur.getId());
+			this.prepStmt.setInt(1, (int) obj.getId());
 			try {
 				this.prepStmt.executeUpdate();
 			} catch (SQLException e) {
@@ -120,14 +125,15 @@ public class AuteurDAO {
 			close();
 		}
 	}
-	
-	public void updateAuthor(Auteur auteur) throws DAOException {
+
+	@Override
+	public void update(Auteur obj) throws DAOException {
 		try {
-		this.prepStmt = connect.prepareStatement("UPDATE auteur SET nom=?, prenom=? WHERE id=?");
-		this.prepStmt.setString(1, auteur.getNom());
-		this.prepStmt.setString(2, auteur.getPrenom());
-		this.prepStmt.setInt(3, (int) auteur.getId());
-		this.prepStmt.executeUpdate();
+			this.prepStmt = connect.prepareStatement("UPDATE auteur SET nom=?, prenom=? WHERE id=?");
+			this.prepStmt.setString(1, obj.getNom());
+			this.prepStmt.setString(2, obj.getPrenom());
+			this.prepStmt.setInt(3, (int) obj.getId());
+			this.prepStmt.executeUpdate();
 		} catch (SQLException e) {
 			throw new DAOException("Echec de la requête");
 		} finally {
