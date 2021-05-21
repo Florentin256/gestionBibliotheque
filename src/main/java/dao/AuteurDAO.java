@@ -45,7 +45,6 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 
 /////////////////////////////////////////////////////
 
-
 	@Override
 	public Auteur getById(Integer id) throws DaoException {
 		Auteur auteurTemp = null;
@@ -119,6 +118,10 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 		}
 	}
 
+	/**
+	 * @throws DaoException
+	 * 			Si l'auteur a supprimer est une dependance d'un ou plusieurs livres encore dans la base
+	 */
 	@Override
 	public void remove(Integer id) throws DaoException {
 		PreparedStatement stmt = null;

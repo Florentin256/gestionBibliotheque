@@ -7,6 +7,8 @@ package dao;
  * 			numéro de page
  * @param limit
  * 			nombre de résultats par page
+ * @param orderBy
+ * 			nom de la colonne dans la base permettant de trier
  */
 public class Pagination {
 	private int offset;

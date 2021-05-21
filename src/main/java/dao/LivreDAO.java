@@ -132,6 +132,9 @@ public class LivreDAO implements DAO<Livre, Integer> {
 		}
 	}
 
+	/**
+	 * La suppression d'un Livre entraine la suppression de tous les tags associés.
+	 */
 	@SuppressWarnings("resource")
 	@Override
 	public void remove(Integer id) throws DaoException {
