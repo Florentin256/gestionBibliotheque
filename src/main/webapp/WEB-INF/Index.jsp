@@ -12,7 +12,6 @@
 	<h1>Gestion Bibliothèque</h1><a href="deconnexion">Deconnexion</a>
 	<%
 	ArrayList<Auteur> listAuteurs = (ArrayList<Auteur>)request.getAttribute("auteurs");
-	ArrayList<Livre> listLivres = (ArrayList<Livre>)request.getAttribute("livres");
 	
 	ArrayList<Auteur> listAuteursOffset = (ArrayList<Auteur>)request.getAttribute("auteursOffset");
 	ArrayList<Livre> listLivresOffset = (ArrayList<Livre>)request.getAttribute("livresOffset");

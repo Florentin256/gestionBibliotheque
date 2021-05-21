@@ -13,48 +13,38 @@ import beans.Livre;
 
 public class LivreDAO implements DAO<Livre, Integer> {
 	
-	private PreparedStatement prepStmt;
-	private ResultSet rs;
-	
 	public LivreDAO() {}
 	
-	private void close() throws DaoException {
-		try {
-			if (rs!=null) {
-				rs.close();
-			}
-			if (prepStmt!=null) {
-				prepStmt.close();
-			}
-		} catch (SQLException e) {
-			throw new DaoException("Echec de fermeture des Statement et ResultSet");
-		}
-	}
 	
 	public void addTagToBookById(int id, String tag) throws DaoException {
+		PreparedStatement prepStmt = null;
 		try {
-			this.prepStmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO tag VALUES (?,?)");
-			this.prepStmt.setInt(1, id);
-			this.prepStmt.setString(2, tag);
-			this.prepStmt.executeUpdate();
+			prepStmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO tag VALUES (?,?)");
+			prepStmt.setInt(1, id);
+			prepStmt.setString(2, tag);
+			prepStmt.executeUpdate();
 		} catch (SQLException e) {
 			throw new DaoException("Echec de la requête");
 		} finally {
-			close();
+			try {
+				prepStmt.close();
+			} catch (SQLException e) {
+				throw new DaoException("Echec de fermeture de Statement et ResultSet");
+			}
 		}
 	}
 	
 	// Méthode private, utilise un Statement et un ResultSet séparé
 	// (appelée dans une méthode de la classe this)
 	private ArrayList<String> getTagOfBookById(int id_livre) throws SQLException, NamingException {
-		Statement st = ConnectionHandler.getConnection().createStatement();
-		ResultSet rs2 = st.executeQuery("SELECT libelle FROM tag WHERE id_livre=" + id_livre);
+		Statement stmt = ConnectionHandler.getConnection().createStatement();
+		ResultSet rs = stmt.executeQuery("SELECT libelle FROM tag WHERE id_livre=" + id_livre);
 		ArrayList<String> tags = new ArrayList<String>();
-		while(rs2.next()) {
-			tags.add(rs2.getString("libelle"));
+		while(rs.next()) {
+			tags.add(rs.getString("libelle"));
 		}
-		st.close();
-		rs2.close();
+		stmt.close();
+		rs.close();
 		return tags;
 	}
 
@@ -64,10 +54,11 @@ public class LivreDAO implements DAO<Livre, Integer> {
 	@Override
 	public Livre getById(Integer id) throws DaoException {
 		Livre livreTemp = null;
-		Statement st = null;
+		Statement stmt = null;
+		ResultSet rs = null;
 		try {
-			st = ConnectionHandler.getConnection().createStatement();
-			this.rs = st.executeQuery("SELECT * FROM livre WHERE id=" + id);
+			stmt = ConnectionHandler.getConnection().createStatement();
+			rs = stmt.executeQuery("SELECT * FROM livre WHERE id=" + id);
 			rs.next();
 			AuteurDAO Adao = new AuteurDAO();
 			livreTemp = new Livre((int)id, rs.getString("titre"), Adao.getById(rs.getInt("auteur")), rs.getDate("date_parution"), getTagOfBookById((int)id));
@@ -75,10 +66,10 @@ public class LivreDAO implements DAO<Livre, Integer> {
 			throw new DaoException("Echec de la requête");
 		} finally {
 			try {
-				st.close();
+				stmt.close();
+				rs.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new DaoException("Echec de fermeture de Statement et ResultSet");
 			}
 		}
 		return livreTemp;
@@ -87,16 +78,17 @@ public class LivreDAO implements DAO<Livre, Integer> {
 	@Override
 	public List<Livre> getAll(Pagination pagination) throws DaoException {
 		ArrayList<Livre> listLivres = new ArrayList<Livre>();
-		Statement st = null;
+		ResultSet rs = null;
+		Statement stmt = null;
 		try {
-			st = ConnectionHandler.getConnection().createStatement();
+			stmt = ConnectionHandler.getConnection().createStatement();
 			String orderBy = "";
 			if (pagination.getOrderBy() != null) {
 				orderBy = "order by " + pagination.getOrderBy();
 			}
-			this.rs = st.executeQuery("SELECT * FROM livre " + orderBy + " limit " + pagination.getLimit() + " offset " + pagination.getOffset()*pagination.getLimit());
+			rs = stmt.executeQuery("SELECT * FROM livre " + orderBy + " limit " + pagination.getLimit() + " offset " + pagination.getOffset()*pagination.getLimit());
 			
-			while(this.rs.next()) {
+			while(rs.next()) {
 				AuteurDAO Adao = new AuteurDAO();
 				int id = rs.getInt("id");
 				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
@@ -105,12 +97,11 @@ public class LivreDAO implements DAO<Livre, Integer> {
 		} catch (SQLException | NamingException e) {
 			throw new DaoException("Echec de la requête");
 		} finally {
-			close();
 			try {
-				st.close();
+				stmt.close();
+				rs.close();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new DaoException("Echec de fermeture de Statement et ResultSet");
 			}
 		}
 		return listLivres;
@@ -118,51 +109,69 @@ public class LivreDAO implements DAO<Livre, Integer> {
 
 	@Override
 	public void add(Livre entity) throws DaoException {
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 		try {
-			this.prepStmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO livre (id, titre, date_parution, auteur) VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			this.prepStmt.setString(1, entity.getTitre());
-			this.prepStmt.setDate(2, entity.getDateParution());
-			this.prepStmt.setInt(3, entity.getAuteur().getId());
-			this.prepStmt.executeUpdate();
-			this.rs = prepStmt.getGeneratedKeys();
-			this.rs.next();
-			entity.setId(this.rs.getInt(1));
+			stmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO livre (id, titre, date_parution, auteur) VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+			stmt.setString(1, entity.getTitre());
+			stmt.setDate(2, entity.getDateParution());
+			stmt.setInt(3, entity.getAuteur().getId());
+			stmt.executeUpdate();
+			rs = stmt.getGeneratedKeys();
+			rs.next();
+			entity.setId(rs.getInt(1));
 		} catch (SQLException e) {
 			throw new DaoException("Echec de la requête");
 		} finally {
-			close();
+			try {
+				stmt.close();
+				rs.close();
+			} catch (SQLException e) {
+				throw new DaoException("Echec de fermeture de Statement et ResultSet");
+			}
 		}
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public void remove(Integer id) throws DaoException {
+		PreparedStatement stmt = null;
 		try {
-			this.prepStmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM tag WHERE id_livre=?");
-			this.prepStmt.setInt(1, (int)id);
-			this.prepStmt.executeUpdate();
-			this.prepStmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM livre WHERE id=?");
-			this.prepStmt.setInt(1, (int)id);
-			this.prepStmt.executeUpdate();
+			stmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM tag WHERE id_livre=?");
+			stmt.setInt(1, (int)id);
+			stmt.executeUpdate();
+			stmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM livre WHERE id=?");
+			stmt.setInt(1, (int)id);
+			stmt.executeUpdate();
 		} catch (SQLException e) {
 			throw new DaoException("Echec de la requête");
 		} finally {
-			close();
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				throw new DaoException("Echec de fermeture de Statement et ResultSet");
+			}
 		}
 	}
 
 	@Override
 	public void update(Livre entity) throws DaoException {
+		PreparedStatement stmt = null;
 		try {
-			this.prepStmt = ConnectionHandler.getConnection().prepareStatement("UPDATE livre SET titre=?, date_parution=?, auteur=? WHERE id=?");
-			this.prepStmt.setString(1, entity.getTitre());
-			this.prepStmt.setDate(2, entity.getDateParution());
-			this.prepStmt.setInt(3, (int) entity.getAuteur().getId());
-			this.prepStmt.setInt(4, (int) entity.getId());
-			this.prepStmt.executeUpdate();
+			stmt = ConnectionHandler.getConnection().prepareStatement("UPDATE livre SET titre=?, date_parution=?, auteur=? WHERE id=?");
+			stmt.setString(1, entity.getTitre());
+			stmt.setDate(2, entity.getDateParution());
+			stmt.setInt(3, (int) entity.getAuteur().getId());
+			stmt.setInt(4, (int) entity.getId());
+			stmt.executeUpdate();
 		} catch (SQLException e) {
 			throw new DaoException("Echec de la requête");
 		} finally {
-			close();
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				throw new DaoException("Echec de fermeture de Statement et ResultSet");
+			}
 		}
 	}
 }
