@@ -11,13 +11,13 @@ public class ConnectDAO {
 	
 	private static Connection connect = null;
 	
-	public ConnectDAO() throws DAOException {
+	public ConnectDAO() throws DaoException {
 		try {
 			InitialContext cxt = new InitialContext();
 			DataSource ds = (DataSource)cxt.lookup("java:/comp/env/jdbc/postgres");
 			connect = ds.getConnection();
 		} catch (NamingException | SQLException e) {
-			throw new DAOException("Echec de connexion à la datasource");
+			throw new DaoException("Echec de connexion à la datasource");
 		}
 	}
 	

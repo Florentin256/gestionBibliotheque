@@ -95,7 +95,7 @@
 						<td><%=listLivresOffset.get(i).getAuteur().getNom() %> <%=listLivresOffset.get(i).getAuteur().getPrenom() %></td>
 						<td>
 							<%
-							ArrayList<String> tags = listLivresOffset.get(i).getTags();
+							ArrayList<String> tags = (ArrayList<String>)listLivresOffset.get(i).getTags();
 							for (int j=0; j<tags.size(); j++) {
 								out.println(tags.get(j));
 							}
