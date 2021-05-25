@@ -28,12 +28,6 @@ public class Controleur extends HttpServlet {
 			AuteurDAO Adao = new AuteurDAO();
 			LivreDAO Ldao = new LivreDAO();
 			
-			//
-			
-			
-			
-			//
-			
 			if(query.contains("/ajoutAuteur")) {
 				Auteur ajout = new Auteur(request.getParameter("nom"), request.getParameter("prenom"));
 				try {

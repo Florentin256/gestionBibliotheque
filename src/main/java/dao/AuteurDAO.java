@@ -17,22 +17,14 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	@Override
 	public Auteur getById(Integer id) throws DaoException {
 		Auteur auteurTemp = null;
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = (Statement) ConnectionHandler.getConnection().createStatement();
-			rs = stmt.executeQuery("SELECT * FROM auteur WHERE id=" + id);
-			rs.next();
-			auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), (int)id);
-		} catch (SQLException e) {
-			throw new DaoException("Echec de la requête");
-		} finally {
-			try {
-				stmt.close();
-				rs.close();
-			} catch (SQLException e) {
-				throw new DaoException("Echec de fermeture de Statement et ResultSet");
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM auteur WHERE id=?")) {
+			stmt.setInt(1, id);
+			try (ResultSet rs = stmt.executeQuery()) {
+				rs.next();
+				auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), (int)id);
 			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec lors de la récupération de l'auteur par son id", e);
 		}
 		return auteurTemp;
 	}
@@ -40,50 +32,33 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	@Override
 	public List<Auteur> getAll(Pagination pagination) throws DaoException {
 		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = ConnectionHandler.getConnection().createStatement();
-			rs = stmt.executeQuery("SELECT * FROM auteur limit" + pagination.getLimit() + " offset " + pagination.getOffset()*pagination.getLimit());
-			
-			while(rs.next()) {
-				Auteur auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), rs.getInt("id"));
-				listAuteurs.add(auteurTemp);
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM auteur limit ? offset ?")) {
+			stmt.setInt(1, pagination.getLimit());
+			stmt.setInt(2, pagination.getOffset()*pagination.getLimit());
+			try (ResultSet rs = stmt.executeQuery()) {
+				while(rs.next()) {
+					Auteur auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), rs.getInt("id"));
+					listAuteurs.add(auteurTemp);
+				}
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec de la requête");
-		} finally {
-			try {
-				stmt.close();
-				rs.close();
-			} catch (SQLException e) {
-				throw new DaoException("Echec de fermeture de Statement et ResultSet");
-			}
+			throw new DaoException("Echec lors de la récupération de la liste des auteurs", e);
 		}
 		return listAuteurs;
 	}
 
 	@Override
 	public void add(Auteur entity) throws DaoException {
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO auteur (id, nom, prenom) VALUES (DEFAULT,?,?)", Statement.RETURN_GENERATED_KEYS);
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO auteur (id, nom, prenom) VALUES (DEFAULT,?,?)", Statement.RETURN_GENERATED_KEYS)) {
 			stmt.setString(1, entity.getNom());
 			stmt.setString(2, entity.getPrenom());
 			stmt.executeUpdate();
-			rs = stmt.getGeneratedKeys();
-			rs.next();
-			entity.setId(rs.getInt(1));
-		} catch (SQLException e) {
-			throw new DaoException("Echec d'insertion dans la base");
-		} finally {
-			try {
-				stmt.close();
-				rs.close();
-			} catch (SQLException e) {
-				throw new DaoException("Echec de fermeture de Statement et ResultSet");
+			try (ResultSet rs = stmt.getGeneratedKeys()) {
+				rs.next();
+				entity.setId(rs.getInt(1));
 			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec d'insertion de l'auteur dans la base", e);
 		}
 	}
 
@@ -93,9 +68,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	 */
 	@Override
 	public void remove(Integer id) throws DaoException {
-		PreparedStatement stmt = null;
-		try {
-			stmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM auteur WHERE id=?");
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM auteur WHERE id=?")) {
 			stmt.setInt(1, (int)id);
 			try {
 				stmt.executeUpdate();
@@ -104,33 +77,19 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 				throw new DaoException("L'auteur est une dépendance d'un livre, suppression impossible");
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec de la requête");
-		} finally {
-			try {
-				stmt.close();
-			} catch (SQLException e) {
-				throw new DaoException("Echec de fermeture de Statement et ResultSet");
-			}
+			throw new DaoException("Echec de la suppression de l'auteur dans la base", e);
 		}
 	}
 
 	@Override
 	public void update(Auteur entity) throws DaoException {
-		PreparedStatement stmt = null;
-		try {
-			stmt = ConnectionHandler.getConnection().prepareStatement("UPDATE auteur SET nom=?, prenom=? WHERE id=?");
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("UPDATE auteur SET nom=?, prenom=? WHERE id=?")) {
 			stmt.setString(1, entity.getNom());
 			stmt.setString(2, entity.getPrenom());
 			stmt.setInt(3, (int) entity.getId());
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new DaoException("Echec de la requête");
-		} finally {
-			try {
-				stmt.close();
-			} catch (SQLException e) {
-				throw new DaoException("Echec de fermeture de Statement et ResultSet");
-			}
+			throw new DaoException("Echec de la mise à jour de l'auteur dans la base", e);
 		}
 	}
 

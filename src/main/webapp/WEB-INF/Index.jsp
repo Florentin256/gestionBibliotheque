@@ -128,9 +128,7 @@
 					</tr>
 					<tr>
 						<td>Auteur</td>
-						<td>
-						<input type="number" name="id" required>
-				    	</td>
+						<td><input type="number" name="id" required></td>
 				    </tr>
 				</table>
 				<input type="submit" value="Ajouter">
