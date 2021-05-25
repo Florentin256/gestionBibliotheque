@@ -17,13 +17,84 @@
   	<res-auth>Container</res-auth>
   </resource-ref>
   
+  
+  
   <servlet>
-		<servlet-name>Controleur</servlet-name>
-		<servlet-class>controleur.Controleur</servlet-class>
-	</servlet>
-	
-	<servlet-mapping>
-		<servlet-name>Controleur</servlet-name>
-		<url-pattern>/</url-pattern>
-	</servlet-mapping>
+    <servlet-name>AuteurController</servlet-name>
+    <servlet-class>controller.AuteurController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AuteurController</servlet-name>
+    <url-pattern>/ajoutAuteur</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AuteurController</servlet-name>
+    <url-pattern>/actionAuteur</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AuteurController</servlet-name>
+    <url-pattern>/modifAuteur</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AuteurController</servlet-name>
+    <url-pattern>/indexAuteur</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AuteurController</servlet-name>
+    <url-pattern>/auteursPrecedents</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AuteurController</servlet-name>
+    <url-pattern>/auteursSuivants</url-pattern>
+  </servlet-mapping>
+  
+  
+  
+  <servlet>
+    <servlet-name>LivreController</servlet-name>
+    <servlet-class>controller.LivreController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>LivreController</servlet-name>
+    <url-pattern>/ajoutLivre</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LivreController</servlet-name>
+    <url-pattern>/actionLivre</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LivreController</servlet-name>
+    <url-pattern>/modifLivre</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LivreController</servlet-name>
+    <url-pattern>/ajoutTagLivre</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LivreController</servlet-name>
+    <url-pattern>/indexLivre</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LivreController</servlet-name>
+    <url-pattern>/livresPrecedents</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>LivreController</servlet-name>
+    <url-pattern>/livresSuivants</url-pattern>
+  </servlet-mapping>
+  
+  
+  
+  <servlet>
+    <servlet-name>UserController</servlet-name>
+    <servlet-class>controller.UserController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>UserController</servlet-name>
+    <url-pattern>/deconnexion</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>UserController</servlet-name>
+    <url-pattern>/login</url-pattern>
+  </servlet-mapping>
 </web-app>
