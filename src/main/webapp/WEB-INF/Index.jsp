@@ -11,8 +11,6 @@
 <body>
 	<h1>Gestion Bibliothèque</h1><a href="deconnexion">Deconnexion</a>
 	<%
-	ArrayList<Auteur> listAuteurs = (ArrayList<Auteur>)request.getAttribute("auteurs");
-	
 	ArrayList<Auteur> listAuteursOffset = (ArrayList<Auteur>)request.getAttribute("auteursOffset");
 	ArrayList<Livre> listLivresOffset = (ArrayList<Livre>)request.getAttribute("livresOffset");
 	%>
@@ -131,15 +129,7 @@
 					<tr>
 						<td>Auteur</td>
 						<td>
-						<SELECT name="id">
-							<%
-							for (int i=0; i<listAuteurs.size(); i++) {
-								out.println("<option value='" + listAuteurs.get(i).getId() + "'>" +
-											listAuteurs.get(i).getNom() + " " + 
-											listAuteurs.get(i).getPrenom() + "</option>");
-							}
-							%>
-				    	</SELECT>
+						<input type="number" name="id" required>
 				    	</td>
 				    </tr>
 				</table>

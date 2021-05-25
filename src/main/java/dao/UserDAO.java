@@ -13,7 +13,14 @@ public class UserDAO implements DAO<User, Integer> {
 
 	public UserDAO() {}
 	
-	
+	/**
+	 * Renvoie True si le login de l'utilisateur existe dans la BD.
+	 * False sinon.
+	 * 
+	 * @param login
+	 * @return
+	 * @throws DaoException
+	 */
 	public boolean existUser(String login) throws DaoException {
 		boolean res = false;
 		Statement stmt = null;
@@ -37,6 +44,13 @@ public class UserDAO implements DAO<User, Integer> {
 		return res;
 	}
 	
+	/**
+	 * Retourne l'utilisateur donné par son login.
+	 * 
+	 * @param login
+	 * @return
+	 * @throws DaoException
+	 */
 	private User getUserByLogin(String login) throws DaoException {
 		User utilisateur = null;
 		Statement stmt = null;
@@ -59,6 +73,14 @@ public class UserDAO implements DAO<User, Integer> {
 		return utilisateur;
 	}
 	
+	/**
+	 * Retourne l'utilisateur donné par son login et password.
+	 * 
+	 * @param login
+	 * @param password
+	 * @return
+	 * @throws DaoException
+	 */
 	public User getUserByLoginPassword(String login, String password) throws DaoException {
 		User utilisateur = null;
 		Statement stmt = null;
@@ -81,6 +103,15 @@ public class UserDAO implements DAO<User, Integer> {
 		return utilisateur;
 	}
 	
+	/**
+	 * Renvoie True si le login et password de l'utilisateur son corrects.
+	 * False sinon.
+	 * 
+	 * @param login
+	 * @param password
+	 * @return
+	 * @throws DaoException
+	 */
 	public boolean trueLoginPassword(String login, String password) throws DaoException {
 		User utilisateur = getUserByLogin(login);
 		if (utilisateur.getPassword().equals(password)) {

@@ -13,37 +13,6 @@ import beans.Auteur;
 public class AuteurDAO implements DAO<Auteur, Integer> {
 	
 	public AuteurDAO() {}
-	
-/////////////////////////////////////////////////////
-////////////////// A SUPPRIMER //////////////////////
-/////////////////////////////////////////////////////
-	
-	public ArrayList<Auteur> getAuthors() throws DaoException {
-		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
-		Statement stmt = null;
-		ResultSet rs = null;
-		try {
-			stmt = ConnectionHandler.getConnection().createStatement();
-			rs = stmt.executeQuery("SELECT * FROM auteur");
-			
-			while(rs.next()) {
-				Auteur auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), rs.getInt("id"));
-				listAuteurs.add(auteurTemp);
-			}
-		} catch (SQLException e) {
-			throw new DaoException("Echec de la requête");
-		} finally {
-			try {
-				stmt.close();
-				rs.close();
-			} catch (SQLException e) {
-				throw new DaoException("Echec de fermeture de Statement et ResultSet");
-			}
-		}
-		return listAuteurs;
-	}
-
-/////////////////////////////////////////////////////
 
 	@Override
 	public Auteur getById(Integer id) throws DaoException {

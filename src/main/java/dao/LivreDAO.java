@@ -15,7 +15,15 @@ public class LivreDAO implements DAO<Livre, Integer> {
 	
 	public LivreDAO() {}
 	
-	
+	/**
+	 * Ajoute un tag à un livre donné par son id.
+	 * 
+	 * @param id
+	 * 			L'id du livre dans la table tag
+	 * @param tag
+	 * 			Le tag à ajouter dans la BD
+	 * @throws DaoException
+	 */
 	public void addTagToBookById(int id, String tag) throws DaoException {
 		PreparedStatement prepStmt = null;
 		try {
@@ -34,8 +42,15 @@ public class LivreDAO implements DAO<Livre, Integer> {
 		}
 	}
 	
-	// Méthode private, utilise un Statement et un ResultSet séparé
-	// (appelée dans une méthode de la classe this)
+	// Méthode private, appelée dans une méthode de la classe this
+	/**
+	 * Retourne une liste de tags associés au livre donné par son id.
+	 * 
+	 * @param id_livre
+	 * @return
+	 * @throws SQLException
+	 * @throws NamingException
+	 */
 	private ArrayList<String> getTagOfBookById(int id_livre) throws SQLException, NamingException {
 		Statement stmt = ConnectionHandler.getConnection().createStatement();
 		ResultSet rs = stmt.executeQuery("SELECT libelle FROM tag WHERE id_livre=" + id_livre);

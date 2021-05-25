@@ -26,16 +26,7 @@ public class Controleur extends HttpServlet {
 			
 			// Initialisation des variables
 			AuteurDAO Adao = new AuteurDAO();
-			ArrayList<Auteur> listAuteurs = null;
-			try {
-				listAuteurs = Adao.getAuthors();
-			} catch (DaoException e3) {
-				// TODO Auto-generated catch block
-				e3.printStackTrace();
-			}
 			LivreDAO Ldao = new LivreDAO();
-
-			request.setAttribute("auteurs", listAuteurs);
 			
 			//
 			
