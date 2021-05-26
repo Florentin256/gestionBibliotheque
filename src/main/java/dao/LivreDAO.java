@@ -1,180 +1,146 @@
 package dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.naming.NamingException;
 
-import beans.*;
+import beans.Livre;
 
-public class LivreDAO {
+public class LivreDAO implements DAO<Livre, Integer> {
 	
-	private Connection connect;
-	private PreparedStatement prepStmt;
-	private ResultSet rs;
+	public LivreDAO() {}
 	
-	public LivreDAO(Connection connect) {
-		this.connect = connect;
-	}
-	
-	private void close() throws DAOException {
-		try {
-			if (rs!=null) {
-				rs.close();
-			}
-			if (prepStmt!=null) {
-				prepStmt.close();
-			}
+	/**
+	 * Ajoute un tag à un livre donné par son id.
+	 * 
+	 * @param id
+	 * 			L'id du livre dans la table tag
+	 * @param tag
+	 * 			Le tag à ajouter dans la BD
+	 * @throws DaoException
+	 */
+	public void addTagToBookById(int id, String tag) throws DaoException {
+		try (PreparedStatement prepStmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO tag VALUES (?,?)")) {
+			prepStmt.setInt(1, id);
+			prepStmt.setString(2, tag);
+			prepStmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new DAOException("Echec de fermeture des Statement et ResultSet");
+			throw new DaoException("Echec lors de l'insertion du tag du livre", e);
 		}
 	}
 	
-	public Livre getBookById(int id) throws DAOException {
-		Livre livreTemp = null;
-		Statement st = null;
-		try {
-			st = connect.createStatement();
-			this.rs = st.executeQuery("SELECT * FROM livre WHERE id=" + id);
-			rs.next();
-			AuteurDAO Adao = new AuteurDAO(connect);
-			livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")), rs.getDate("date_parution"), getTagOfBookById(id));
-		} catch (SQLException | NamingException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			try {
-				st.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	// Méthode private, appelée dans une méthode de la classe this
+	/**
+	 * Retourne une liste de tags associés au livre donné par son id.
+	 * 
+	 * @param id_livre
+	 * @return
+	 * @throws SQLException
+	 * @throws NamingException
+	 * @throws DaoException 
+	 */
+	private ArrayList<String> getTagOfBookById(int id_livre) throws DaoException {
+		ArrayList<String> tags = new ArrayList<String>();
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT libelle FROM tag WHERE id_livre=?")) {
+			stmt.setInt(1, id_livre);
+			try (ResultSet rs = stmt.executeQuery()) {
+				while(rs.next()) {
+					tags.add(rs.getString("libelle"));
+				}
 			}
+		} catch(SQLException e) {
+			throw new DaoException("Echec lors de la récupération des tags du livre", e);
+		}
+		return tags;
+	}
+
+
+	///////////////////////////////////////////
+	
+	@Override
+	public Livre getById(Integer id) throws DaoException {
+		Livre livreTemp = null;
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM livre WHERE id=?")) {
+			stmt.setInt(1, id);
+			try (ResultSet rs = stmt.executeQuery()) {
+				rs.next();
+				AuteurDAO Adao = new AuteurDAO();
+				livreTemp = new Livre((int)id, rs.getString("titre"), Adao.getById(rs.getInt("auteur")), rs.getDate("date_parution"), getTagOfBookById((int)id));
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec lors de la récupération du livre par son id", e);
 		}
 		return livreTemp;
 	}
-	
-	public void addTagToBookById(int id, String tag) throws DAOException {
-		try {
-			this.prepStmt = connect.prepareStatement("INSERT INTO tag VALUES (?,?)");
-			this.prepStmt.setInt(1, id);
-			this.prepStmt.setString(2, tag);
-			this.prepStmt.executeUpdate();
-		} catch (SQLException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
-		}
-	}
-	
-	// Méthode private, utilise un Statement et un ResultSet séparé
-	// (appelée dans une méthode de la classe this)
-	private ArrayList<String> getTagOfBookById(int id_livre) throws SQLException, NamingException {
-		Statement st = connect.createStatement();
-		ResultSet rs2 = st.executeQuery("SELECT libelle FROM tag WHERE id_livre=" + id_livre);
-		ArrayList<String> tags = new ArrayList<String>();
-		while(rs2.next()) {
-			tags.add(rs2.getString("libelle"));
-		}
-		st.close();
-		rs2.close();
-		return tags;
-	}
-	
-	public ArrayList<Livre> getBooks() throws DAOException {
+
+	@Override
+	public List<Livre> getAll(Pagination pagination) throws DaoException {
 		ArrayList<Livre> listLivres = new ArrayList<Livre>();
-		try {
-			Statement st = connect.createStatement();
-			this.rs = st.executeQuery("SELECT * FROM livre");
-			while(this.rs.next()) {
-				AuteurDAO Adao = new AuteurDAO(connect);
-				int id = rs.getInt("id");
-				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
-				listLivres.add(livreTemp);
+		String query = "SELECT * FROM livre limit ? offset ?";
+		if (pagination.getOrderBy() != null) {
+			query = "SELECT * FROM livre order by " + pagination.getOrderBy() + " limit ? offset ? ";
+		}
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement(query)) {
+			stmt.setInt(1, pagination.getLimit());
+			stmt.setInt(2, pagination.getOffset()*pagination.getLimit());
+			try (ResultSet rs = stmt.executeQuery()) {
+				while(rs.next()) {
+					AuteurDAO Adao = new AuteurDAO();
+					int id = rs.getInt("id");
+					Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
+					listLivres.add(livreTemp);
+				}
 			}
-		} catch (SQLException | NamingException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
+		} catch (SQLException e) {
+			throw new DaoException("Echec lors de la réupération de la liste des livres", e);
 		}
 		return listLivres;
-		
 	}
-	
-	public ArrayList<Livre> getBooks(int offset) throws DAOException {
-		ArrayList<Livre> listLivres = new ArrayList<Livre>();
-		Statement st = null;
-		try {
-			st = connect.createStatement();
-			this.rs = st.executeQuery("SELECT * FROM livre order by date_parution limit 10 offset " + offset*10);
-			
-			while(this.rs.next()) {
-				AuteurDAO Adao = new AuteurDAO(connect);
-				int id = rs.getInt("id");
-				Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getAuthorById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
-				listLivres.add(livreTemp);
+
+	@Override
+	public void add(Livre entity) throws DaoException {
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO livre (id, titre, date_parution, auteur) VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
+			stmt.setString(1, entity.getTitre());
+			stmt.setDate(2, entity.getDateParution());
+			stmt.setInt(3, entity.getAuteur().getId());
+			stmt.executeUpdate();
+			try (ResultSet rs = stmt.getGeneratedKeys()) {
+				rs.next();
+				entity.setId(rs.getInt(1));
 			}
-		} catch (SQLException | NamingException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
-			try {
-				st.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return listLivres;
-		
-	}
-	
-	public void addBook(Livre livre) throws DAOException {
-		try {
-			this.prepStmt = connect.prepareStatement("INSERT INTO livre (id, titre, date_parution, auteur) VALUES (DEFAULT,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-			this.prepStmt.setString(1, livre.getTitre());
-			this.prepStmt.setDate(2, livre.getDateParution());
-			this.prepStmt.setInt(3, livre.getAuteur().getId());
-			this.prepStmt.executeUpdate();
-			this.rs = prepStmt.getGeneratedKeys();
-			this.rs.next();
-			livre.setId(this.rs.getInt(1));
 		} catch (SQLException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
+			throw new DaoException("Echec d'insertion du livre dans la base", e);
 		}
 	}
-	
-	public void removeBook(Livre livre) throws DAOException {
-		try {
-			this.prepStmt = connect.prepareStatement("DELETE FROM tag WHERE id_livre=?");
-			this.prepStmt.setInt(1, (int) livre.getId());
-			this.prepStmt.executeUpdate();
-			this.prepStmt = connect.prepareStatement("DELETE FROM livre WHERE id=?");
-			this.prepStmt.setInt(1, (int) livre.getId());
-			this.prepStmt.executeUpdate();
+
+	/**
+	 * La suppression d'un Livre entraine la suppression de tous les tags associés.
+	 */
+	@Override
+	public void remove(Integer id) throws DaoException {
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM livre WHERE id=?")) {
+			stmt.setInt(1, (int)id);
+			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
+			throw new DaoException("Echec de la suppression du livre dans la base", e);
 		}
 	}
-	
-	public void modifierLivre(Livre livre) throws DAOException {
-		try {
-			this.prepStmt = connect.prepareStatement("UPDATE livre SET titre=?, date_parution=?, auteur=? WHERE id=?");
-			this.prepStmt.setString(1, livre.getTitre());
-			this.prepStmt.setDate(2, livre.getDateParution());
-			this.prepStmt.setInt(3, (int) livre.getAuteur().getId());
-			this.prepStmt.setInt(4, (int) livre.getId());
-			this.prepStmt.executeUpdate();
+
+	@Override
+	public void update(Livre entity) throws DaoException {
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("UPDATE livre SET titre=?, date_parution=?, auteur=? WHERE id=?")) {
+			stmt.setString(1, entity.getTitre());
+			stmt.setDate(2, entity.getDateParution());
+			stmt.setInt(3, (int) entity.getAuteur().getId());
+			stmt.setInt(4, (int) entity.getId());
+			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
+			throw new DaoException("Echec de la mise à jour du livre dans la base", e);
 		}
 	}
 }

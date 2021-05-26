@@ -22,7 +22,7 @@ create table utilisateur(
 		prenom VARCHAR(50) NOT NULL);
 
 create table tag (
-		id_livre INT REFERENCES livre NOT NULL, 
+		id_livre INT REFERENCES livre ON DELETE CASCADE NOT NULL, 
 		libelle VARCHAR(50) NOT NULL);
 
 insert into auteur (id, nom, prenom) values (DEFAULT, 'Campagne', 'Florentin');

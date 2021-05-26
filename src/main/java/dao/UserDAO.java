@@ -1,101 +1,178 @@
 package dao;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
-import beans.*;
+import beans.User;
 
-public class UserDAO {
+public class UserDAO implements DAO<User, Integer> {
 
-	private Connection connect;
-	private PreparedStatement stmt;
-	private ResultSet rs;
+	public UserDAO() {}
 	
-	public UserDAO(Connection connect) {
-		this.connect = connect;
-	}
-	
-	private void close() throws DAOException {
-		try {
-			if (rs!=null) {
-				rs.close();
-			}
-			if (stmt!=null) {
-				stmt.close();
+	/**
+	 * Renvoie True si le login de l'utilisateur existe dans la BD.
+	 * False sinon.
+	 * 
+	 * @param login
+	 * @return
+	 * @throws DaoException
+	 */
+	public boolean existUser(String login) throws DaoException {
+		boolean res = false;
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM utilisateur where login=?")) {
+			stmt.setString(1, login);
+			try (ResultSet rs = stmt.executeQuery()) {
+				if (rs.next()) {
+					res = true;
+				}
 			}
 		} catch (SQLException e) {
-			throw new DAOException("Echec de fermeture des Statement et ResultSet");
+			throw new DaoException("Echec lors de la vérification de l'existance du login", e);
 		}
+		return res;
 	}
 	
-	private ArrayList<User> getUsers() throws DAOException {
-		ArrayList<User> listUtilisateurs = new ArrayList<User>();
-		try {
-			Statement st = connect.createStatement();
-			this.rs = st.executeQuery("SELECT * FROM utilisateur");
-			
-			while(this.rs.next()) {
-				User utilisateurTemp = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
-				listUtilisateurs.add(utilisateurTemp);
-			}
-		} catch (SQLException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
-		}
-		return listUtilisateurs;
-	}
-	
-	public boolean existUser(String login) throws DAOException {
-		ArrayList<User> listUtilisateurs = getUsers();
-		for (int i=0; i<listUtilisateurs.size(); i++) {
-			if (login.equals(listUtilisateurs.get(i).getLogin())) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	private User getUserByLogin(String login) throws DAOException {
+	/**
+	 * Retourne l'utilisateur donné par son login.
+	 * 
+	 * @param login
+	 * @return
+	 * @throws DaoException
+	 */
+	private User getUserByLogin(String login) throws DaoException {
 		User utilisateur = null;
-		try {
-			Statement st = connect.createStatement();
-			this.rs = st.executeQuery("SELECT * FROM utilisateur WHERE login='" + login + "'");
-			rs.next();
-			utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM utilisateur WHERE login=?")) {
+			stmt.setString(1, login);
+			try (ResultSet rs = stmt.executeQuery()) {
+				rs.next();
+				utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
+			}
 		} catch (SQLException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
+			throw new DaoException("Echec lors de la récupération de l'utilisateur", e);
 		}
 		return utilisateur;
 	}
 	
-	public User getUserByLoginPassword(String login, String password) throws DAOException {
+	/**
+	 * Retourne l'utilisateur donné par son login et password.
+	 * 
+	 * @param login
+	 * @param password
+	 * @return
+	 * @throws DaoException
+	 */
+	public User getUserByLoginPassword(String login, String password) throws DaoException {
 		User utilisateur = null;
-		try {
-			Statement st = connect.createStatement();
-			this.rs = st.executeQuery("SELECT * FROM utilisateur WHERE login='" + login + "' AND password='" + password + "'");
-			rs.next();
-			utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM utilisateur WHERE login=? AND password=?")) {
+			stmt.setString(1, login);
+			stmt.setString(2, password);
+			try (ResultSet rs = stmt.executeQuery()) {
+				rs.next();
+				utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
+			}
 		} catch (SQLException e) {
-			throw new DAOException("Echec de la requête");
-		} finally {
-			close();
+			throw new DaoException("Echec lors de la récupération de l'utilisateur", e);
 		}
 		return utilisateur;
 	}
 	
-	public boolean trueLoginPassword(String login, String password) throws DAOException {
+	/**
+	 * Renvoie True si le login et password de l'utilisateur son corrects.
+	 * False sinon.
+	 * 
+	 * @param login
+	 * @param password
+	 * @return
+	 * @throws DaoException
+	 */
+	public boolean trueLoginPassword(String login, String password) throws DaoException {
 		User utilisateur = getUserByLogin(login);
 		if (utilisateur.getPassword().equals(password)) {
 			return true;
 		}
 		return false;
+	}
+	
+	
+	///////////////////////////////////////////////////////
+
+	@Override
+	public User getById(Integer id) throws DaoException {
+		User userTemp = null;
+		try {
+			PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM utilisateur WHERE id=?");
+			stmt.setInt(1, id);
+			try (ResultSet rs = stmt.executeQuery()) {
+				rs.next();
+				userTemp = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), (int)id);
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec lors de la récupération de l'utilisateur", e);
+		}
+		return userTemp;
+	}
+
+	@Override
+	public List<User> getAll(Pagination pagination) throws DaoException {
+		ArrayList<User> listUsers = new ArrayList<User>();
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM utilisateur limit ? offset ?")) {
+			stmt.setInt(1, pagination.getLimit());
+			stmt.setInt(2, pagination.getOffset()*pagination.getLimit());
+			try (ResultSet rs = stmt.executeQuery()) {
+				while(rs.next()) {
+					User utilisateurTemp = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
+					listUsers.add(utilisateurTemp);
+				}
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec lors de la récupération de la liste des utilisateurs", e);
+		}
+		return listUsers;
+	}
+
+	@Override
+	public void add(User entity) throws DaoException {
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("INSERT INTO utilisateur (id, nom, prenom, login, password) VALUES (DEFAULT,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
+			stmt.setString(1, entity.getNom());
+			stmt.setString(2, entity.getPrenom());
+			stmt.setString(3, entity.getLogin());
+			stmt.setString(4, entity.getPassword());
+			stmt.executeUpdate();
+			try (ResultSet rs = stmt.getGeneratedKeys()) {
+				rs.next();
+				entity.setId(rs.getInt(1));
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec lors de l'insertion de l'utilisateur dans la base", e);
+		}
+	}
+
+	@Override
+	public void remove(Integer id) throws DaoException {
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM utilisateur WHERE id=?")) {
+			stmt.setInt(1, (int)id);
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new DaoException("Echec lors de la suppression de l'utilisateur dans la base", e);
+		}
+	}
+
+	@Override
+	public void update(User entity) throws DaoException {
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("UPDATE utilisateur SET nom=?, prenom=?, login=?, password=? WHERE id=?")) {
+			stmt.setString(1, entity.getNom());
+			stmt.setString(2, entity.getPrenom());
+			stmt.setString(3, entity.getLogin());
+			stmt.setString(4, entity.getPassword());
+			stmt.setInt(5, (int) entity.getId());
+			stmt.executeUpdate();
+		} catch (SQLException e) {
+			throw new DaoException("Echec lors de la mise à jour de l'utilisateur dans la base", e);
+		}
 	}
 	
 }

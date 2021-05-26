@@ -7,21 +7,22 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-public class ConnectDAO {
+public class ConnectionHandler {
 	
 	private static Connection connect = null;
 	
-	public ConnectDAO() throws DAOException {
+	static {
 		try {
 			InitialContext cxt = new InitialContext();
 			DataSource ds = (DataSource)cxt.lookup("java:/comp/env/jdbc/postgres");
 			connect = ds.getConnection();
 		} catch (NamingException | SQLException e) {
-			throw new DAOException("Echec de connexion à la datasource");
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
-	public Connection connect() {
+	public static Connection getConnection() {
 		return connect;
 	}
 }

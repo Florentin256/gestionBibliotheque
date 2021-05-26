@@ -1,6 +1,6 @@
 package beans;
 
-abstract class Entity<Type> {
+public abstract class Entity<Type> {
 	private Type id;
 
 	public Type getId() {

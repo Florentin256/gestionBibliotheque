@@ -11,9 +11,6 @@
 <body>
 	<h1>Gestion Bibliothèque</h1><a href="deconnexion">Deconnexion</a>
 	<%
-	ArrayList<Auteur> listAuteurs = (ArrayList<Auteur>)request.getAttribute("auteurs");
-	ArrayList<Livre> listLivres = (ArrayList<Livre>)request.getAttribute("livres");
-	
 	ArrayList<Auteur> listAuteursOffset = (ArrayList<Auteur>)request.getAttribute("auteursOffset");
 	ArrayList<Livre> listLivresOffset = (ArrayList<Livre>)request.getAttribute("livresOffset");
 	%>
@@ -95,7 +92,7 @@
 						<td><%=listLivresOffset.get(i).getAuteur().getNom() %> <%=listLivresOffset.get(i).getAuteur().getPrenom() %></td>
 						<td>
 							<%
-							ArrayList<String> tags = listLivresOffset.get(i).getTags();
+							ArrayList<String> tags = (ArrayList<String>)listLivresOffset.get(i).getTags();
 							for (int j=0; j<tags.size(); j++) {
 								out.println(tags.get(j));
 							}
@@ -131,17 +128,7 @@
 					</tr>
 					<tr>
 						<td>Auteur</td>
-						<td>
-						<SELECT name="id">
-							<%
-							for (int i=0; i<listAuteurs.size(); i++) {
-								out.println("<option value='" + listAuteurs.get(i).getId() + "'>" +
-											listAuteurs.get(i).getNom() + " " + 
-											listAuteurs.get(i).getPrenom() + "</option>");
-							}
-							%>
-				    	</SELECT>
-				    	</td>
+						<td><input type="number" name="id" required></td>
 				    </tr>
 				</table>
 				<input type="submit" value="Ajouter">
