@@ -17,8 +17,9 @@ public class UserController extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private UserDAO userDao = new UserDAO();
+	private final UserDAO userDao = new UserDAO();
 	
+	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String query  = request.getRequestURI();
 		HttpSession session = request.getSession(true);

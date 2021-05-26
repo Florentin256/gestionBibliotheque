@@ -7,20 +7,20 @@ import beans.Entity;
  * Interface CRUD
  *
  * @param <T>
- * 			Type de l'objet correspondant à la classe DAO
- * 			qui implémeente l'interface
+ * 			Type de l'objet correspondant a la classe DAO
+ * 			qui implemente l'interface
  * @param <IdType>
  * 			Type de l'id de la classe 'Entity' dont la classe
- * 			DAO hérite
+ * 			DAO herite
  */
 public interface DAO<T extends Entity<IdType>, IdType> {
 	/**
 	 * Recherche par Id
 	 * 
 	 * @param id
-	 * 			identifiant 'id' de l'objet à retourner
+	 * 			identifiant 'id' de l'objet ï¿½ retourner
 	 * @return
-	 * 			objet identifié par 'id' dans la base
+	 * 			objet identifie par 'id' dans la base
 	 * @throws DaoException
 	 */
 	T getById(IdType id) throws DaoException;
@@ -29,7 +29,7 @@ public interface DAO<T extends Entity<IdType>, IdType> {
 	 * Liste par pagination
 	 * 
 	 * @param pagination
-	 * 			Class contenant les paramètres de pagination
+	 * 			Class contenant les parametres de pagination
 	 * @return
 	 * 			la liste des objets dans la base sous forme de
 	 * 			pagination
@@ -41,7 +41,7 @@ public interface DAO<T extends Entity<IdType>, IdType> {
 	 * Ajoute l'entite en base
 	 * 
 	 * @param entity
-	 * 			Objet à ajouter en base
+	 * 			Objet a ajouter en base
 	 * @throws DaoException
 	 */
 	void add(T entity) throws DaoException;
@@ -50,16 +50,16 @@ public interface DAO<T extends Entity<IdType>, IdType> {
 	 * Supprime l'entite en base
 	 * 
 	 * @param id
-	 * 			id de l'objet à supprimer en base
+	 * 			id de l'objet a supprimer en base
 	 * @throws DaoException
 	 */
 	void remove(IdType id) throws DaoException;
 	
 	/**
-	 * Met à jour l'entite en base
+	 * Met a jour l'entite en base
 	 * 
 	 * @param entity
-	 * 			Objet à modifier en base
+	 * 			Objet a modifier en base
 	 * @throws DaoException
 	 */
 	void update(T entity) throws DaoException;

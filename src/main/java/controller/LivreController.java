@@ -22,78 +22,106 @@ public class LivreController extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private LivreDAO livreDao = new LivreDAO();
+	private final LivreDAO livreDao = new LivreDAO();
 	
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String query  = request.getRequestURI();
-		HttpSession session = request.getSession(true);
-
+	
+	
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String query  = req.getRequestURI();
+		HttpSession session = req.getSession(true);
+		
 		if(session.getAttribute("APP_USER") != null) {
-			
+			if(query.contains("/indexLivre")) {
+				req.setAttribute("indexChoix", "indexLivre");
+				req.setAttribute("numPageLivres", (int)0);
+				ArrayList<Livre> listLivresOffset = null;
+				try {
+					listLivresOffset = (ArrayList<Livre>) livreDao.getAll(new Pagination(0, 10, "date_parution"));
+				} catch (DaoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				req.setAttribute("livresOffset", listLivresOffset);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				
+				
+			}
+		}
+	}
+
+
+
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String query  = req.getRequestURI();
+		HttpSession session = req.getSession(true);
+		
+		if(session.getAttribute("APP_USER") != null) {
 			// Initialisation des variables
-			AuteurDAO Adao = new AuteurDAO();
+			AuteurDAO auteurDao = new AuteurDAO();
 			
 			if(query.contains("/ajoutLivre")) {
 				Auteur aut = null;
 				try {
-					aut = Adao.getById(Integer.parseInt(request.getParameter("id")));
+					aut = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-				String dateStr = request.getParameter("dateParution");
+				String dateStr = req.getParameter("dateParution");
 				java.sql.Date date = java.sql.Date.valueOf(dateStr);
-				Livre ajout = new Livre(request.getParameter("titre"), aut, date);
+				Livre ajout = new Livre(req.getParameter("titre"), aut, date);
 				try {
 					livreDao.add(ajout);
 				} catch (DaoException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 				
-			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("supprimer")) {
+			} else if(query.contains("/actionLivre") && req.getParameter("submit").equals("supprimer")) {
 				try {
-					livreDao.remove(Integer.parseInt(request.getParameter("id")));
+					livreDao.remove(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 				
-			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("modifier")) {
+			} else if(query.contains("/actionLivre") && req.getParameter("submit").equals("modifier")) {
 				Livre mod = null;
 				try {
-					mod = livreDao.getById(Integer.parseInt(request.getParameter("id")));
+					mod = livreDao.getById(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				request.setAttribute("livre", mod);
-				request.getRequestDispatcher("WEB-INF/modifLivre.jsp").forward(request,response);
+				req.setAttribute("livre", mod);
+				req.getRequestDispatcher("WEB-INF/modifLivre.jsp").forward(req,resp);
 				
 
-			} else if(query.contains("/actionLivre") && request.getParameter("submit").equals("Ajouter des Tags")) {
+			} else if(query.contains("/actionLivre") && req.getParameter("submit").equals("Ajouter des Tags")) {
 				ArrayList<String> tags = null;
 				try {
-					tags = (ArrayList<String>) livreDao.getById(Integer.parseInt(request.getParameter("id"))).getTags();
+					tags = (ArrayList<String>) livreDao.getById(Integer.parseInt(req.getParameter("id"))).getTags();
 				} catch (NumberFormatException | DaoException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				request.setAttribute("tagsLivre", tags);
-				request.getRequestDispatcher("WEB-INF/ajouterTagLivre.jsp").forward(request,response);
+				req.setAttribute("tagsLivre", tags);
+				req.getRequestDispatcher("WEB-INF/ajouterTagLivre.jsp").forward(req,resp);
 				
 				
 			} else if(query.contains("/modifLivre")) {
 				try {
-					Livre mod = livreDao.getById(Integer.parseInt(request.getParameter("id")));
-					mod.setTitre(request.getParameter("titre"));
-					mod.setAuteur(Adao.getById(Integer.parseInt(request.getParameter("id_auteur"))));
+					Livre mod = livreDao.getById(Integer.parseInt(req.getParameter("id")));
+					mod.setTitre(req.getParameter("titre"));
+					mod.setAuteur(auteurDao.getById(Integer.parseInt(req.getParameter("id_auteur"))));
 					// Parser Date (Simple Date Format)
-					java.sql.Date date = java.sql.Date.valueOf(request.getParameter("dateParution"));
+					java.sql.Date date = java.sql.Date.valueOf(req.getParameter("dateParution"));
 					mod.setDateParution(date);
 					livreDao.update(mod);
 				} catch (NumberFormatException e) {
@@ -103,36 +131,22 @@ public class LivreController extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 
 				
 			} else if(query.contains("/ajoutTagLivre")) {
 				try {
-					livreDao.addTagToBookById(Integer.parseInt(request.getParameter("id")), request.getParameter("newTag"));
+					livreDao.addTagToBookById(Integer.parseInt(req.getParameter("id")), req.getParameter("newTag"));
 				} catch (NumberFormatException | DaoException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 
 				
-			} else if(query.contains("/indexLivre")) {
-				request.setAttribute("indexChoix", "indexLivre");
-				request.setAttribute("numPageLivres", (int)0);
-				ArrayList<Livre> listLivresOffset = null;
-				try {
-					listLivresOffset = (ArrayList<Livre>) livreDao.getAll(new Pagination(0, 10, "date_parution"));
-				} catch (DaoException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				request.setAttribute("livresOffset", listLivresOffset);
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
-				
-				
 			} else if (query.contains("/livresPrecedents")) {
-				request.setAttribute("indexChoix", "indexLivre");
-				int numPage = Integer.parseInt(request.getParameter("numPageLivres")) - 1;
+				req.setAttribute("indexChoix", "indexLivre");
+				int numPage = Integer.parseInt(req.getParameter("numPageLivres")) - 1;
 				if (numPage < 0) {
 					numPage = 0;
 				}
@@ -143,15 +157,15 @@ public class LivreController extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				request.setAttribute("livresOffset", listLivresOffset);
-				request.setAttribute("numPageLivres", numPage);
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				req.setAttribute("livresOffset", listLivresOffset);
+				req.setAttribute("numPageLivres", numPage);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 				
 			} else if(query.contains("/livresSuivants")) {
-				request.setAttribute("indexChoix", "indexLivre");
-				int numPage = Integer.parseInt(request.getParameter("numPageLivres")) + 1;
-				request.setAttribute("numPageLivres", numPage);
+				req.setAttribute("indexChoix", "indexLivre");
+				int numPage = Integer.parseInt(req.getParameter("numPageLivres")) + 1;
+				req.setAttribute("numPageLivres", numPage);
 				
 				ArrayList<Livre> listLivresOffset = null;
 				try {
@@ -160,8 +174,8 @@ public class LivreController extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				request.setAttribute("livresOffset", listLivresOffset);
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);	
+				req.setAttribute("livresOffset", listLivresOffset);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);	
 			}	
 		}
 	}

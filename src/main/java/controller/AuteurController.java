@@ -19,72 +19,17 @@ public class AuteurController extends HttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private AuteurDAO auteurDao = new AuteurDAO();
+	private final AuteurDAO auteurDao = new AuteurDAO();
 	
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String query  = request.getRequestURI();
-		HttpSession session = request.getSession(true);
+	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String query  = req.getRequestURI();
+		HttpSession session = req.getSession(true);
 
 		if(session.getAttribute("APP_USER") != null) {
-			
-			if(query.contains("/ajoutAuteur")) {
-				Auteur ajout = new Auteur(request.getParameter("nom"), request.getParameter("prenom"));
-				try {
-					auteurDao.add(ajout);
-				} catch (DaoException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
-				
-				
-			} else if(query.contains("/actionAuteur") && request.getParameter("submit").equals("supprimer")) {
-				try {
-					auteurDao.remove(Integer.parseInt(request.getParameter("id")));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DaoException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
-				
-				
-			} else if(query.contains("/actionAuteur") && request.getParameter("submit").equals("modifier")) {
-				Auteur mod = null;
-				try {
-					mod = auteurDao.getById(Integer.parseInt(request.getParameter("id")));
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DaoException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				request.setAttribute("auteur", mod);
-				request.getRequestDispatcher("/WEB-INF/modifAuteur.jsp").forward(request,response);
-				
-
-			} else if(query.contains("/modifAuteur")) {
-				try {
-					Auteur mod = auteurDao.getById(Integer.parseInt(request.getParameter("id")));
-					mod.setNom(request.getParameter("nom"));
-					mod.setPrenom(request.getParameter("prenom"));
-					auteurDao.update(mod);
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (DaoException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
-
-				
-			} else if(query.contains("/indexAuteur")) {
-				request.setAttribute("indexChoix", "indexAuteur");
-				request.setAttribute("numPageAuteurs", (int)0);
+			if(query.contains("/indexAuteur")) {
+				req.setAttribute("indexChoix", "indexAuteur");
+				req.setAttribute("numPageAuteurs", (int)0);
 				ArrayList<Auteur> listAuteursOffset = null;
 				try {
 					listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(0, 10));
@@ -92,13 +37,61 @@ public class AuteurController extends HttpServlet {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
 				}
-				request.setAttribute("auteursOffset", listAuteursOffset);
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
+				req.setAttribute("auteursOffset", listAuteursOffset);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+			}
+		}
+	}
+	
+	@Override
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String query  = req.getRequestURI();
+		HttpSession session = req.getSession(true);
 
+		if(session.getAttribute("APP_USER") != null) {
+			
+			String action = "";
+			if (req.getParameter("action") != null) {
+				action = req.getParameter("action");
+			}
+			
+			if (action.equals("addAuteur")) {
+				Auteur ajout = new Auteur(req.getParameter("nom"), req.getParameter("prenom"));
+				try {
+					auteurDao.add(ajout);
+				} catch (DaoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);	
+			} else if (action.equals("putAuteur")) {
+				try {
+					Auteur mod = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
+					mod.setNom(req.getParameter("nom"));
+					mod.setPrenom(req.getParameter("prenom"));
+					auteurDao.update(mod);
+				} catch (NumberFormatException | DaoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+			} else if (action.equals("nextAuteurs")) {
+				req.setAttribute("indexChoix", "indexAuteur");
+				int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) + 1;
+				req.setAttribute("numPageAuteurs", numPage);
 				
-			} else if(query.contains("/auteursPrecedents")) {
-				request.setAttribute("indexChoix", "indexAuteur");
-				int numPage = Integer.parseInt(request.getParameter("numPageAuteurs")) - 1;
+				ArrayList<Auteur> listAuteursOffset = null;
+				try {
+					listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(numPage, 10));
+				} catch (DaoException e3) {
+					// TODO Auto-generated catch block
+					e3.printStackTrace();
+				}
+				req.setAttribute("auteursOffset", listAuteursOffset);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+			} else if (action.equals("previousAuteurs")) {
+				req.setAttribute("indexChoix", "indexAuteur");
+				int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) - 1;
 				if (numPage < 0) {
 					numPage = 0;
 				}
@@ -109,25 +102,34 @@ public class AuteurController extends HttpServlet {
 					// TODO Auto-generated catch block
 					e3.printStackTrace();
 				}
-				request.setAttribute("numPageAuteurs", numPage);
-				request.setAttribute("auteursOffset", listAuteursOffset);
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);
-				
-				
-			} else if(query.contains("/auteursSuivants")) {
-				request.setAttribute("indexChoix", "indexAuteur");
-				int numPage = Integer.parseInt(request.getParameter("numPageAuteurs")) + 1;
-				request.setAttribute("numPageAuteurs", numPage);
-				
-				ArrayList<Auteur> listAuteursOffset = null;
+				req.setAttribute("numPageAuteurs", numPage);
+				req.setAttribute("auteursOffset", listAuteursOffset);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+			}
+			
+			
+			
+			if(query.contains("/actionAuteur") && req.getParameter("submit").equals("supprimer")) {
 				try {
-					listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(numPage, 10));
-				} catch (DaoException e3) {
+					auteurDao.remove(Integer.parseInt(req.getParameter("id")));
+				} catch (NumberFormatException | DaoException e) {
 					// TODO Auto-generated catch block
-					e3.printStackTrace();
+					e.printStackTrace();
 				}
-				request.setAttribute("auteursOffset", listAuteursOffset);
-				request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request,response);	
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				
+				
+			} else if(query.contains("/actionAuteur") && req.getParameter("submit").equals("modifier")) {
+				Auteur mod = null;
+				try {
+					mod = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
+				} catch (NumberFormatException | DaoException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				req.setAttribute("auteur", mod);
+				req.getRequestDispatcher("/WEB-INF/modifAuteur.jsp").forward(req,resp);
+				
 			}
 			
 		}

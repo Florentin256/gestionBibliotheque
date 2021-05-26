@@ -11,8 +11,6 @@ import beans.User;
 
 public class UserDAO implements DAO<User, Integer> {
 
-	public UserDAO() {}
-	
 	/**
 	 * Renvoie True si le login de l'utilisateur existe dans la BD.
 	 * False sinon.
@@ -31,13 +29,13 @@ public class UserDAO implements DAO<User, Integer> {
 				}
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la vérification de l'existance du login", e);
+			throw new DaoException("Echec lors de la verification de l'existance du login", e);
 		}
 		return res;
 	}
 	
 	/**
-	 * Retourne l'utilisateur donné par son login.
+	 * Retourne l'utilisateur donne par son login.
 	 * 
 	 * @param login
 	 * @return
@@ -52,13 +50,13 @@ public class UserDAO implements DAO<User, Integer> {
 				utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la récupération de l'utilisateur", e);
+			throw new DaoException("Echec lors de la recuperation de l'utilisateur par son login", e);
 		}
 		return utilisateur;
 	}
 	
 	/**
-	 * Retourne l'utilisateur donné par son login et password.
+	 * Retourne l'utilisateur donne par son login et password.
 	 * 
 	 * @param login
 	 * @param password
@@ -75,7 +73,7 @@ public class UserDAO implements DAO<User, Integer> {
 				utilisateur = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), rs.getInt("id"));
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la récupération de l'utilisateur", e);
+			throw new DaoException("Echec lors de la recuperation de l'utilisateur par son login et password", e);
 		}
 		return utilisateur;
 	}
@@ -103,15 +101,14 @@ public class UserDAO implements DAO<User, Integer> {
 	@Override
 	public User getById(Integer id) throws DaoException {
 		User userTemp = null;
-		try {
-			PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM utilisateur WHERE id=?");
+		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM utilisateur WHERE id=?")) {
 			stmt.setInt(1, id);
 			try (ResultSet rs = stmt.executeQuery()) {
 				rs.next();
-				userTemp = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), (int)id);
+				userTemp = new User(rs.getString("nom"), rs.getString("prenom"), rs.getString("login"), rs.getString("password"), id);
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la récupération de l'utilisateur", e);
+			throw new DaoException("Echec lors de la recuperation de l'utilisateur par son id", e);
 		}
 		return userTemp;
 	}
@@ -129,7 +126,7 @@ public class UserDAO implements DAO<User, Integer> {
 				}
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la récupération de la liste des utilisateurs", e);
+			throw new DaoException("Echec lors de la recuperation de la liste des utilisateurs", e);
 		}
 		return listUsers;
 	}
@@ -171,7 +168,7 @@ public class UserDAO implements DAO<User, Integer> {
 			stmt.setInt(5, (int) entity.getId());
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la mise à jour de l'utilisateur dans la base", e);
+			throw new DaoException("Echec lors de la mise a jour de l'utilisateur dans la base", e);
 		}
 	}
 	
