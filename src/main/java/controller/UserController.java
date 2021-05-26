@@ -20,16 +20,23 @@ public class UserController extends HttpServlet {
 	private final UserDAO userDao = new UserDAO();
 	
 	@Override
-	protected void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String query  = request.getRequestURI();
-		HttpSession session = request.getSession(true);
-
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		String query  = req.getRequestURI();
+		HttpSession session = req.getSession(true);
+		
 		if(session.getAttribute("APP_USER") != null) {
 			if(query.contains("/deconnexion")) {
 				session.invalidate();
-				request.getRequestDispatcher("WEB-INF/login.jsp").forward(request,response);
+				req.getRequestDispatcher("WEB-INF/login.jsp").forward(req,resp);
 			}
-		} else {
+		}
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(true);
+
+		if(session.getAttribute("APP_USER") == null) {
 			try {
 				if (request.getParameter("login") != null && request.getParameter("password") != null &&
 						userDao.existUser(request.getParameter("login"))
