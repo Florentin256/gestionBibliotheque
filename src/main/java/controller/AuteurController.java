@@ -27,8 +27,6 @@ public class AuteurController extends HttpServlet {
 
 		if(session.getAttribute("APP_USER") != null) {
 			
-			// Initialisation des variables
-			
 			if(query.contains("/ajoutAuteur")) {
 				Auteur ajout = new Auteur(request.getParameter("nom"), request.getParameter("prenom"));
 				try {
