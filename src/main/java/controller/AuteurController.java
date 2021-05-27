@@ -26,16 +26,7 @@ public class AuteurController extends HttpServlet {
 		HttpSession session = req.getSession(true);
 
 		if(session.getAttribute(UserController.APP_USER) != null) {
-			req.setAttribute("indexChoix", "indexAuteur");
-			req.setAttribute("numPageAuteurs", 0);
-			ArrayList<Auteur> listAuteursOffset = null;
-			try {
-				listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(0, 10));
-			} catch (DaoException e) {
-				req.setAttribute("error", e);
-				req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
-			}
-			req.setAttribute("auteursOffset", listAuteursOffset);
+			synchroIndex(req, resp);
 			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 		}
 	}
@@ -59,7 +50,8 @@ public class AuteurController extends HttpServlet {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				synchroIndex(req, resp);
+				req.getRequestDispatcher("WEB-INF/Index.jsp?indexChoix=indexAuteur").forward(req,resp);
 				
 			} else if (action.equals("putAuteur")) {
 				try {
@@ -71,6 +63,7 @@ public class AuteurController extends HttpServlet {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
+				synchroIndex(req, resp);
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if (action.equals("nextAuteurs")) {
@@ -111,6 +104,7 @@ public class AuteurController extends HttpServlet {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
+				synchroIndex(req, resp);
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if (action.equals("modifier")) {
@@ -118,6 +112,7 @@ public class AuteurController extends HttpServlet {
 				try {
 					mod = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
 					req.setAttribute("auteur", mod);
+					synchroIndex(req, resp);
 					req.getRequestDispatcher("/WEB-INF/modifAuteur.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
@@ -125,5 +120,18 @@ public class AuteurController extends HttpServlet {
 				}
 			}
 		}
+	}
+	
+	private void synchroIndex(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		req.setAttribute("indexChoix", "indexAuteur");
+		req.setAttribute("numPageAuteurs", 0);
+		ArrayList<Auteur> listAuteursOffset = null;
+		try {
+			listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(0, 10));
+		} catch (DaoException e) {
+			req.setAttribute("error", e);
+			req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
+		}
+		req.setAttribute("auteursOffset", listAuteursOffset);
 	}
 }
