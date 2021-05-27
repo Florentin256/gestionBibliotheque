@@ -10,16 +10,17 @@
 <body>
 	<%
 	Livre mod = (Livre)request.getAttribute("livre");
-	
-	out.println("<form method='post' action='livres'>");
-	out.println("<input type='hidden' name='id' value='" + mod.getId() + "'>");
-	out.println("<input type='hidden' name='action' value='putLivre'>");
-	out.println("Titre: <input type='text' name='titre' value='" + mod.getTitre() + "'>");
-	out.println("Date de parution: <input type='date' name='dateParution' value='" + mod.getDateParution() + "'>");
-	out.println("Auteur: " + mod.getAuteur().getNom() + " " + mod.getAuteur().getPrenom());
-	out.println("<input type='number' name='id_auteur' required>");
-	out.println("<input type='submit'>");
-	out.println("</form>");
 	%>
+	
+	<form method='post' action='livres'>
+		<input type='hidden' name='action' value='putLivre'>
+		<input type='hidden' name='id' value='<%= mod.getId() %>'>
+		Titre: <input type='text' name='titre' value='<%= mod.getTitre() %>'>
+		Date de parution: <input type='date' name='dateParution' value='<%= mod.getDateParution() %>'>
+		Auteur: <%= mod.getAuteur().getNom() %> <%= mod.getAuteur().getPrenom() %>
+		<input type='number' name='id_auteur' required>
+		<input type='submit'>
+	</form>
+	
 </body>
 </html>
