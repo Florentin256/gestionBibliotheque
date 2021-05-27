@@ -74,36 +74,35 @@ public class AuteurController extends HttpServlet {
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if (action.equals("nextAuteurs")) {
-				req.setAttribute("indexChoix", "indexAuteur");
-				int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) + 1;
-				req.setAttribute("numPageAuteurs", numPage);
-				
-				ArrayList<Auteur> listAuteursOffset = null;
 				try {
+					req.setAttribute("indexChoix", "indexAuteur");
+					int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) + 1;
+					req.setAttribute("numPageAuteurs", numPage);
+					ArrayList<Auteur> listAuteursOffset = null;
 					listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(numPage, 10));
-				} catch (DaoException e) {
+					req.setAttribute("auteursOffset", listAuteursOffset);
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				} catch (DaoException | NumberFormatException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				req.setAttribute("auteursOffset", listAuteursOffset);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if (action.equals("previousAuteurs")) {
-				req.setAttribute("indexChoix", "indexAuteur");
-				int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) - 1;
-				if (numPage < 0) {
-					numPage = 0;
-				}
-				ArrayList<Auteur> listAuteursOffset = null;
 				try {
+					req.setAttribute("indexChoix", "indexAuteur");
+					int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) - 1;
+					if (numPage < 0) {
+						numPage = 0;
+					}
+					ArrayList<Auteur> listAuteursOffset = null;
 					listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(numPage, 10));
-				} catch (DaoException e) {
+					req.setAttribute("numPageAuteurs", numPage);
+					req.setAttribute("auteursOffset", listAuteursOffset);
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				} catch (DaoException | NumberFormatException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				req.setAttribute("numPageAuteurs", numPage);
-				req.setAttribute("auteursOffset", listAuteursOffset);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if (action.equals("supprimer")) {
 				try {

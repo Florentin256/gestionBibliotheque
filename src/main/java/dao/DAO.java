@@ -9,11 +9,11 @@ import beans.Entity;
  * @param <T>
  * 			Type de l'objet correspondant a la classe DAO
  * 			qui implemente l'interface
- * @param <IdType>
+ * @param <T1>
  * 			Type de l'id de la classe 'Entity' dont la classe
  * 			DAO herite
  */
-public interface DAO<T extends Entity<IdType>, IdType> {
+public interface DAO<T extends Entity<T1>, T1> {
 	/**
 	 * Recherche par Id
 	 * 
@@ -23,7 +23,7 @@ public interface DAO<T extends Entity<IdType>, IdType> {
 	 * 			objet identifie par 'id' dans la base
 	 * @throws DaoException
 	 */
-	T getById(IdType id) throws DaoException;
+	T getById(T1 id) throws DaoException;
 	
 	/**
 	 * Liste par pagination
@@ -53,7 +53,7 @@ public interface DAO<T extends Entity<IdType>, IdType> {
 	 * 			id de l'objet a supprimer en base
 	 * @throws DaoException
 	 */
-	void remove(IdType id) throws DaoException;
+	void remove(T1 id) throws DaoException;
 	
 	/**
 	 * Met a jour l'entite en base

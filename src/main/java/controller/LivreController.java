@@ -129,36 +129,35 @@ public class LivreController extends HttpServlet {
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if (action.equals("previousLivres")) {
-				req.setAttribute("indexChoix", "indexLivre");
-				int numPage = Integer.parseInt(req.getParameter("numPageLivres")) - 1;
-				if (numPage < 0) {
-					numPage = 0;
-				}
-				ArrayList<Livre> listLivresOffset = null;
 				try {
+					req.setAttribute("indexChoix", "indexLivre");
+					int numPage = Integer.parseInt(req.getParameter("numPageLivres")) - 1;
+					if (numPage < 0) {
+						numPage = 0;
+					}
+					ArrayList<Livre> listLivresOffset = null;
 					listLivresOffset = (ArrayList<Livre>)livreDao.getAll(new Pagination(numPage, 10, "date_parution"));
-				} catch (DaoException e) {
+					req.setAttribute("livresOffset", listLivresOffset);
+					req.setAttribute("numPageLivres", numPage);
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				} catch (DaoException | NumberFormatException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				req.setAttribute("livresOffset", listLivresOffset);
-				req.setAttribute("numPageLivres", numPage);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if(action.equals("nextLivres")) {
-				req.setAttribute("indexChoix", "indexLivre");
-				int numPage = Integer.parseInt(req.getParameter("numPageLivres")) + 1;
-				req.setAttribute("numPageLivres", numPage);
-				
-				ArrayList<Livre> listLivresOffset = null;
 				try {
+					req.setAttribute("indexChoix", "indexLivre");
+					int numPage = Integer.parseInt(req.getParameter("numPageLivres")) + 1;
+					req.setAttribute("numPageLivres", numPage);
+					ArrayList<Livre> listLivresOffset = null;
 					listLivresOffset = (ArrayList<Livre>)livreDao.getAll(new Pagination(numPage, 10, "date_parution"));
-				} catch (DaoException e) {
+					req.setAttribute("livresOffset", listLivresOffset);
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				} catch (DaoException | NumberFormatException  e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				req.setAttribute("livresOffset", listLivresOffset);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);	
 			}	
 		}
 	}
