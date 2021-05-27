@@ -58,44 +58,44 @@ public class LivreController extends HttpServlet {
 				Livre ajout = new Livre(req.getParameter("titre"), aut, date);
 				try {
 					livreDao.add(ajout);
+					synchroIndex(req, resp);
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				} catch (DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				synchroIndex(req, resp);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if(action.equals("supprimer")) {
 				try {
 					livreDao.remove(Integer.parseInt(req.getParameter("id")));
+					synchroIndex(req, resp);
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				synchroIndex(req, resp);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if(action.equals("modifier")) {
 				Livre mod = null;
 				try {
 					mod = livreDao.getById(Integer.parseInt(req.getParameter("id")));
+					req.setAttribute("livre", mod);
+					req.getRequestDispatcher("WEB-INF/modifLivre.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				req.setAttribute("livre", mod);
-				req.getRequestDispatcher("WEB-INF/modifLivre.jsp").forward(req,resp);
 				
 			} else if(action.equals("Ajouter des Tags")) {
 				ArrayList<String> tags = null;
 				try {
 					tags = (ArrayList<String>) livreDao.getById(Integer.parseInt(req.getParameter("id"))).getTags();
+					req.setAttribute("tagsLivre", tags);
+					req.getRequestDispatcher("WEB-INF/ajouterTagLivre.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				req.setAttribute("tagsLivre", tags);
-				req.getRequestDispatcher("WEB-INF/ajouterTagLivre.jsp").forward(req,resp);
 				
 			} else if(action.equals("putLivre")) {
 				try {
@@ -106,22 +106,22 @@ public class LivreController extends HttpServlet {
 					java.sql.Date date = java.sql.Date.valueOf(req.getParameter("dateParution"));
 					mod.setDateParution(date);
 					livreDao.update(mod);
+					synchroIndex(req, resp);
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				synchroIndex(req, resp);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 
 			} else if(action.equals("ajoutTagLivre")) {
 				try {
 					livreDao.addTagToBookById(Integer.parseInt(req.getParameter("id")), req.getParameter("newTag"));
+					synchroIndex(req, resp);
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				synchroIndex(req, resp);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
 			} else if (action.equals("previousLivres")) {
 				try {
