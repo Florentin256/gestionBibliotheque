@@ -29,7 +29,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	
 	@Override
 	public List<Auteur> getAll(Pagination pagination) throws DaoException {
-		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
+		ArrayList<Auteur> listAuteurs = new ArrayList<>();
 		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM auteur limit ? offset ?")) {
 			stmt.setInt(1, pagination.getLimit());
 			stmt.setInt(2, pagination.getOffset()*pagination.getLimit());

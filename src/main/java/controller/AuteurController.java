@@ -25,7 +25,7 @@ public class AuteurController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 
-		if(session.getAttribute("APP_USER") != null) {
+		if(session.getAttribute(UserController.APP_USER) != null) {
 			req.setAttribute("indexChoix", "indexAuteur");
 			req.setAttribute("numPageAuteurs", 0);
 			ArrayList<Auteur> listAuteursOffset = null;
@@ -44,7 +44,7 @@ public class AuteurController extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 
-		if(session.getAttribute("APP_USER") != null) {
+		if(session.getAttribute(UserController.APP_USER) != null) {
 			
 			String action = "";
 			if (req.getParameter("action") != null) {

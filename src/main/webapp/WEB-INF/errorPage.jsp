@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@ page isErrorPage="true" %>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>

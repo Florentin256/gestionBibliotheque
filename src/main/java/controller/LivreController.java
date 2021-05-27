@@ -27,7 +27,7 @@ public class LivreController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 		
-		if(session.getAttribute("APP_USER") != null) {
+		if(session.getAttribute(UserController.APP_USER) != null) {
 			req.setAttribute("indexChoix", "indexLivre");
 			req.setAttribute("numPageLivres", 0);
 			ArrayList<Livre> listLivresOffset = null;
@@ -46,7 +46,7 @@ public class LivreController extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 		
-		if(session.getAttribute("APP_USER") != null) {
+		if(session.getAttribute(UserController.APP_USER) != null) {
 			// Initialisation des variables
 			AuteurDAO auteurDao = new AuteurDAO();
 			

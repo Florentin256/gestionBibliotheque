@@ -43,7 +43,7 @@ public class LivreDAO implements DAO<Livre, Integer> {
 	 * @throws DaoException 
 	 */
 	private ArrayList<String> getTagOfBookById(int idLivre) throws DaoException {
-		ArrayList<String> tags = new ArrayList<String>();
+		ArrayList<String> tags = new ArrayList<>();
 		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT libelle FROM tag WHERE id_livre=?")) {
 			stmt.setInt(1, idLivre);
 			try (ResultSet rs = stmt.executeQuery()) {
@@ -78,7 +78,7 @@ public class LivreDAO implements DAO<Livre, Integer> {
 
 	@Override
 	public List<Livre> getAll(Pagination pagination) throws DaoException {
-		ArrayList<Livre> listLivres = new ArrayList<Livre>();
+		ArrayList<Livre> listLivres = new ArrayList<>();
 		String query = "SELECT * FROM livre limit ? offset ?";
 		if (pagination.getOrderBy() != null) {
 			query = "SELECT * FROM livre order by " + pagination.getOrderBy() + " limit ? offset ? ";

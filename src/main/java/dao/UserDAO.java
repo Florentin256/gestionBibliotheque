@@ -116,7 +116,7 @@ public class UserDAO implements DAO<User, Integer> {
 
 	@Override
 	public List<User> getAll(Pagination pagination) throws DaoException {
-		ArrayList<User> listUsers = new ArrayList<User>();
+		ArrayList<User> listUsers = new ArrayList<>();
 		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM utilisateur limit ? offset ?")) {
 			stmt.setInt(1, pagination.getLimit());
 			stmt.setInt(2, pagination.getOffset()*pagination.getLimit());

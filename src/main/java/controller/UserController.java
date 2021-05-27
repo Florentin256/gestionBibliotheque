@@ -19,6 +19,8 @@ public class UserController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final UserDAO userDao = new UserDAO();
 	
+	public static final String APP_USER = "APP_USER";
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
@@ -28,7 +30,7 @@ public class UserController extends HttpServlet {
 			action = req.getParameter("action");
 		}
 		
-		if(session.getAttribute("APP_USER") == null || action.equals("deconnexion")) {
+		if(session.getAttribute(APP_USER) == null || action.equals("deconnexion")) {
 			req.getRequestDispatcher("WEB-INF/login.jsp").forward(req,resp);
 		} else {
 			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
@@ -39,12 +41,12 @@ public class UserController extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 
-		if(session.getAttribute("APP_USER") == null) {
+		if(session.getAttribute(APP_USER) == null) {
 			try {
 				if (req.getParameter("login") != null && req.getParameter("password") != null &&
 						userDao.existUser(req.getParameter("login"))
 						&& userDao.trueLoginPassword(req.getParameter("login"), req.getParameter("password"))) {
-					session.setAttribute("APP_USER", userDao.getUserByLoginPassword(req.getParameter("login"), req.getParameter("password")));
+					session.setAttribute(APP_USER, userDao.getUserByLoginPassword(req.getParameter("login"), req.getParameter("password")));
 					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req, resp);
 				} else {
 					// Erreur Login / Password

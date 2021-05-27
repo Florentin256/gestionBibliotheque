@@ -10,7 +10,7 @@ public class Livre extends Entity<Integer> implements Comparable<Object>{
 	private String titre;
 	private Auteur auteur;
 	private Date dateParution;
-	private List<String> tags = new ArrayList<String>();
+	private List<String> tags = new ArrayList<>();
 	
 	public Livre(Integer id, String titre, Auteur auteur, Date dateParution, List<String> tags) {
 		this.setTitre(titre);
