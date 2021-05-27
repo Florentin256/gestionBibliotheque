@@ -9,6 +9,6 @@
 </head>
 <body>
 	<h1>Erreur</h1>
-	<p><%= exception %></p>
+	<p><%= request.getAttribute("error") %></p>
 </body>
 </html>

@@ -34,7 +34,8 @@ public class LivreController extends HttpServlet {
 			try {
 				listLivresOffset = (ArrayList<Livre>) livreDao.getAll(new Pagination(0, 10, "date_parution"));
 			} catch (DaoException e) {
-				e.printStackTrace();
+				req.setAttribute("error", e);
+				req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 			}
 			req.setAttribute("livresOffset", listLivresOffset);
 			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
@@ -67,7 +68,8 @@ public class LivreController extends HttpServlet {
 				try {
 					livreDao.add(ajout);
 				} catch (DaoException e) {
-					e.printStackTrace();
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
@@ -75,7 +77,8 @@ public class LivreController extends HttpServlet {
 				try {
 					livreDao.remove(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e) {
-					e.printStackTrace();
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
@@ -84,7 +87,8 @@ public class LivreController extends HttpServlet {
 				try {
 					mod = livreDao.getById(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e) {
-					e.printStackTrace();
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
 				req.setAttribute("livre", mod);
 				req.getRequestDispatcher("WEB-INF/modifLivre.jsp").forward(req,resp);
@@ -94,7 +98,8 @@ public class LivreController extends HttpServlet {
 				try {
 					tags = (ArrayList<String>) livreDao.getById(Integer.parseInt(req.getParameter("id"))).getTags();
 				} catch (NumberFormatException | DaoException e) {
-					e.printStackTrace();
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
 				req.setAttribute("tagsLivre", tags);
 				req.getRequestDispatcher("WEB-INF/ajouterTagLivre.jsp").forward(req,resp);
@@ -109,7 +114,8 @@ public class LivreController extends HttpServlet {
 					mod.setDateParution(date);
 					livreDao.update(mod);
 				} catch (NumberFormatException | DaoException e) {
-					e.printStackTrace();
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 
@@ -117,7 +123,8 @@ public class LivreController extends HttpServlet {
 				try {
 					livreDao.addTagToBookById(Integer.parseInt(req.getParameter("id")), req.getParameter("newTag"));
 				} catch (NumberFormatException | DaoException e) {
-					e.printStackTrace();
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
@@ -131,7 +138,8 @@ public class LivreController extends HttpServlet {
 				try {
 					listLivresOffset = (ArrayList<Livre>)livreDao.getAll(new Pagination(numPage, 10, "date_parution"));
 				} catch (DaoException e) {
-					e.printStackTrace();
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
 				req.setAttribute("livresOffset", listLivresOffset);
 				req.setAttribute("numPageLivres", numPage);
@@ -146,7 +154,8 @@ public class LivreController extends HttpServlet {
 				try {
 					listLivresOffset = (ArrayList<Livre>)livreDao.getAll(new Pagination(numPage, 10, "date_parution"));
 				} catch (DaoException e) {
-					e.printStackTrace();
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
 				req.setAttribute("livresOffset", listLivresOffset);
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);	

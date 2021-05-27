@@ -9,7 +9,7 @@
 <title>Index</title>
 </head>
 <body>
-	<h1>Gestion Bibliothèque</h1><a href="deconnexion">Deconnexion</a>
+	<h1>Gestion Bibliothèque</h1><a href="login?action=deconnexion">Deconnexion</a>
 	<hr>
 	
 	<a href="auteurs">Auteurs</a>

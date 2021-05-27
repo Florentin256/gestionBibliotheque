@@ -23,31 +23,39 @@ public class UserController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 		
-		if(session.getAttribute("APP_USER") != null) {
-			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
-		} else {
+		String action = "";
+		if (req.getParameter("action") != null) {
+			action = req.getParameter("action");
+		}
+		
+		if(session.getAttribute("APP_USER") == null || action.equals("deconnexion")) {
 			req.getRequestDispatcher("WEB-INF/login.jsp").forward(req,resp);
+		} else {
+			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 		}
 	}
 
 	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(true);
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		HttpSession session = req.getSession(true);
 
 		if(session.getAttribute("APP_USER") == null) {
 			try {
-				if (request.getParameter("login") != null && request.getParameter("password") != null &&
-						userDao.existUser(request.getParameter("login"))
-						&& userDao.trueLoginPassword(request.getParameter("login"), request.getParameter("password"))) {
-					session.setAttribute("APP_USER", userDao.getUserByLoginPassword(request.getParameter("login"), request.getParameter("password")));
-					request.getRequestDispatcher("WEB-INF/Index.jsp").forward(request, response);
+				if (req.getParameter("login") != null && req.getParameter("password") != null &&
+						userDao.existUser(req.getParameter("login"))
+						&& userDao.trueLoginPassword(req.getParameter("login"), req.getParameter("password"))) {
+					session.setAttribute("APP_USER", userDao.getUserByLoginPassword(req.getParameter("login"), req.getParameter("password")));
+					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req, resp);
 				} else {
 					// Erreur Login / Password
-					request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
+					req.getRequestDispatcher("WEB-INF/login.jsp").forward(req, resp);
 				}
 			} catch (ServletException | IOException | DaoException e) {
-				e.printStackTrace();
+				req.setAttribute("error", e);
+				req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 			}
+		} else {
+			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 		}
 	}
 }
