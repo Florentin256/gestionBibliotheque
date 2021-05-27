@@ -9,6 +9,7 @@
 </head>
 <body>
 	<%
+	@SuppressWarnings("unchecked")
 	ArrayList<String> tags = (ArrayList<String>)request.getAttribute("tagsLivre");;
 	if (tags.size() != 0) {
 		for (int j=0; j<tags.size(); j++) {
@@ -23,6 +24,6 @@
 		<input type='text' name='newTag'>
 		<input type='submit'>
 	</form>
-	%>
+	
 </body>
 </html>
