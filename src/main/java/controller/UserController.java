@@ -46,7 +46,6 @@ public class UserController extends HttpServlet {
 					request.getRequestDispatcher("WEB-INF/login.jsp").forward(request, response);
 				}
 			} catch (ServletException | IOException | DaoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

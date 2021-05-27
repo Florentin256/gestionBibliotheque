@@ -32,7 +32,6 @@ public class AuteurController extends HttpServlet {
 			try {
 				listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(0, 10));
 			} catch (DaoException e3) {
-				// TODO Auto-generated catch block
 				e3.printStackTrace();
 			}
 			req.setAttribute("auteursOffset", listAuteursOffset);
@@ -56,7 +55,6 @@ public class AuteurController extends HttpServlet {
 				try {
 					auteurDao.add(ajout);
 				} catch (DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
@@ -68,7 +66,6 @@ public class AuteurController extends HttpServlet {
 					mod.setPrenom(req.getParameter("prenom"));
 					auteurDao.update(mod);
 				} catch (NumberFormatException | DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
@@ -82,7 +79,6 @@ public class AuteurController extends HttpServlet {
 				try {
 					listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(numPage, 10));
 				} catch (DaoException e3) {
-					// TODO Auto-generated catch block
 					e3.printStackTrace();
 				}
 				req.setAttribute("auteursOffset", listAuteursOffset);
@@ -98,7 +94,6 @@ public class AuteurController extends HttpServlet {
 				try {
 					listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(numPage, 10));
 				} catch (DaoException e3) {
-					// TODO Auto-generated catch block
 					e3.printStackTrace();
 				}
 				req.setAttribute("numPageAuteurs", numPage);
@@ -109,7 +104,6 @@ public class AuteurController extends HttpServlet {
 				try {
 					auteurDao.remove(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);

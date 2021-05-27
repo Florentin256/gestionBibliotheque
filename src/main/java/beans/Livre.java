@@ -76,7 +76,6 @@ public class Livre extends Entity<Integer> implements Comparable<Object>{
 
 	@Override
 	public int compareTo(Object o) {
-		// TODO Auto-generated method stub
 		return this.getDateParution().compareTo(((Livre)o).getDateParution());
 	}
 }

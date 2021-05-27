@@ -89,10 +89,11 @@ public class UserDAO implements DAO<User, Integer> {
 	 */
 	public boolean trueLoginPassword(String login, String password) throws DaoException {
 		User utilisateur = getUserByLogin(login);
+		boolean res = false;
 		if (utilisateur.getPassword().equals(password)) {
-			return true;
+			res = true;
 		}
-		return false;
+		return res;
 	}
 	
 	

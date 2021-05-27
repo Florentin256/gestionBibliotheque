@@ -34,7 +34,6 @@ public class LivreController extends HttpServlet {
 			try {
 				listLivresOffset = (ArrayList<Livre>) livreDao.getAll(new Pagination(0, 10, "date_parution"));
 			} catch (DaoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			req.setAttribute("livresOffset", listLivresOffset);
@@ -60,7 +59,6 @@ public class LivreController extends HttpServlet {
 				try {
 					aut = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 				String dateStr = req.getParameter("dateParution");
@@ -69,7 +67,6 @@ public class LivreController extends HttpServlet {
 				try {
 					livreDao.add(ajout);
 				} catch (DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
@@ -78,7 +75,6 @@ public class LivreController extends HttpServlet {
 				try {
 					livreDao.remove(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
@@ -88,7 +84,6 @@ public class LivreController extends HttpServlet {
 				try {
 					mod = livreDao.getById(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.setAttribute("livre", mod);
@@ -99,7 +94,6 @@ public class LivreController extends HttpServlet {
 				try {
 					tags = (ArrayList<String>) livreDao.getById(Integer.parseInt(req.getParameter("id"))).getTags();
 				} catch (NumberFormatException | DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.setAttribute("tagsLivre", tags);
@@ -114,11 +108,7 @@ public class LivreController extends HttpServlet {
 					java.sql.Date date = java.sql.Date.valueOf(req.getParameter("dateParution"));
 					mod.setDateParution(date);
 					livreDao.update(mod);
-				} catch (NumberFormatException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
+				} catch (NumberFormatException | DaoException e) {
 					e.printStackTrace();
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
@@ -127,7 +117,6 @@ public class LivreController extends HttpServlet {
 				try {
 					livreDao.addTagToBookById(Integer.parseInt(req.getParameter("id")), req.getParameter("newTag"));
 				} catch (NumberFormatException | DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
@@ -142,7 +131,6 @@ public class LivreController extends HttpServlet {
 				try {
 					listLivresOffset = (ArrayList<Livre>)livreDao.getAll(new Pagination(numPage, 10, "date_parution"));
 				} catch (DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.setAttribute("livresOffset", listLivresOffset);
@@ -158,7 +146,6 @@ public class LivreController extends HttpServlet {
 				try {
 					listLivresOffset = (ArrayList<Livre>)livreDao.getAll(new Pagination(numPage, 10, "date_parution"));
 				} catch (DaoException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				req.setAttribute("livresOffset", listLivresOffset);
