@@ -11,7 +11,7 @@
 	<%
 	Auteur mod = (Auteur)request.getAttribute("auteur");
 	
-	out.println("<form method='post' action='modifAuteur'>");
+	out.println("<form method='post' action='auteurs'>");
 	out.println("<input type='hidden' name='id' value='" + mod.getId() + "'>");
 	out.println("<input type='hidden' name='action' value='putAuteur'>");
 	out.println("Nom: <input type='text' name='nom' value='" + mod.getNom() + "'>");

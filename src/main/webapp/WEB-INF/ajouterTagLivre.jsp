@@ -17,7 +17,8 @@
 		}
 	}
 	
-	out.println("<form method='post' action='ajoutTagLivre'>");
+	out.println("<form method='post' action='livres'>");
+	out.println("<input type='hidden' name='action' value='ajoutTagLivre'>");
 	out.println("<input type='hidden' name='id' value='" + request.getParameter("id") + "'>");
 	out.println("<input type='text' name='newTag'>");
 	out.println("<input type='submit'>");

@@ -23,29 +23,25 @@ public class AuteurController extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String query  = req.getRequestURI();
 		HttpSession session = req.getSession(true);
 
 		if(session.getAttribute("APP_USER") != null) {
-			if(query.contains("/indexAuteur")) {
-				req.setAttribute("indexChoix", "indexAuteur");
-				req.setAttribute("numPageAuteurs", (int)0);
-				ArrayList<Auteur> listAuteursOffset = null;
-				try {
-					listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(0, 10));
-				} catch (DaoException e3) {
-					// TODO Auto-generated catch block
-					e3.printStackTrace();
-				}
-				req.setAttribute("auteursOffset", listAuteursOffset);
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+			req.setAttribute("indexChoix", "indexAuteur");
+			req.setAttribute("numPageAuteurs", 0);
+			ArrayList<Auteur> listAuteursOffset = null;
+			try {
+				listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(0, 10));
+			} catch (DaoException e3) {
+				// TODO Auto-generated catch block
+				e3.printStackTrace();
 			}
+			req.setAttribute("auteursOffset", listAuteursOffset);
+			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 		}
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String query  = req.getRequestURI();
 		HttpSession session = req.getSession(true);
 
 		if(session.getAttribute("APP_USER") != null) {
@@ -63,7 +59,8 @@ public class AuteurController extends HttpServlet {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);	
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				
 			} else if (action.equals("putAuteur")) {
 				try {
 					Auteur mod = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
@@ -75,6 +72,7 @@ public class AuteurController extends HttpServlet {
 					e.printStackTrace();
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				
 			} else if (action.equals("nextAuteurs")) {
 				req.setAttribute("indexChoix", "indexAuteur");
 				int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) + 1;
@@ -89,6 +87,7 @@ public class AuteurController extends HttpServlet {
 				}
 				req.setAttribute("auteursOffset", listAuteursOffset);
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+				
 			} else if (action.equals("previousAuteurs")) {
 				req.setAttribute("indexChoix", "indexAuteur");
 				int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) - 1;
@@ -105,11 +104,8 @@ public class AuteurController extends HttpServlet {
 				req.setAttribute("numPageAuteurs", numPage);
 				req.setAttribute("auteursOffset", listAuteursOffset);
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
-			}
-			
-			
-			
-			if(query.contains("/actionAuteur") && req.getParameter("submit").equals("supprimer")) {
+				
+			} else if (action.equals("supprimer")) {
 				try {
 					auteurDao.remove(Integer.parseInt(req.getParameter("id")));
 				} catch (NumberFormatException | DaoException e) {
@@ -118,21 +114,16 @@ public class AuteurController extends HttpServlet {
 				}
 				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				
-				
-			} else if(query.contains("/actionAuteur") && req.getParameter("submit").equals("modifier")) {
+			} else if (action.equals("modifier")) {
 				Auteur mod = null;
 				try {
 					mod = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
+					req.setAttribute("auteur", mod);
+					req.getRequestDispatcher("/WEB-INF/modifAuteur.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
-				req.setAttribute("auteur", mod);
-				req.getRequestDispatcher("/WEB-INF/modifAuteur.jsp").forward(req,resp);
-				
 			}
-			
 		}
-
 	}
 }

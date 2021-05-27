@@ -21,14 +21,12 @@ public class UserController extends HttpServlet {
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		String query  = req.getRequestURI();
 		HttpSession session = req.getSession(true);
 		
 		if(session.getAttribute("APP_USER") != null) {
-			if(query.contains("/deconnexion")) {
-				session.invalidate();
-				req.getRequestDispatcher("WEB-INF/login.jsp").forward(req,resp);
-			}
+			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+		} else {
+			req.getRequestDispatcher("WEB-INF/login.jsp").forward(req,resp);
 		}
 	}
 

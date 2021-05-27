@@ -22,7 +22,7 @@
 			ArrayList<Livre> listLivresOffset = (ArrayList<Livre>)request.getAttribute("livresOffset");
 			for (int i=0; i<listLivresOffset.size(); i++) {
 				%>
-				<form method='post' action='actionLivre'>
+				<form method='post' action='livres'>
 					<input type='hidden' name='id' value='<%=listLivresOffset.get(i).getId() %>'>
 					<tr>
 						<td><%=listLivresOffset.get(i).getTitre() %></td>
@@ -36,9 +36,9 @@
 							}
 							%>
 						</td>
-						<td><input type='submit' name='submit' value='Ajouter des Tags'></td>
-						<td><input type='submit' name='submit' value='modifier'></td>
-						<td><input type='submit' name='submit' value='supprimer'></td>
+						<td><input type='submit' name='action' value='Ajouter des Tags'></td>
+						<td><input type='submit' name='action' value='modifier'></td>
+						<td><input type='submit' name='action' value='supprimer'></td>
 					</tr>
 				</form>
 				<%
@@ -46,17 +46,20 @@
 			int numPage = (int)request.getAttribute("numPageLivres");
 	%>
 			</table>
-			<form method="post" action="livresPrecedents">
+			<form method="post" action="livres">
 				<input type="hidden" name="numPageLivres" value="<%= numPage %>">
+				<input type="hidden" name="action" value="previousLivres">
 				<input type="submit" value="precedent">
 			</form>
-			<form method="post" action="livresSuivants">
+			<form method="post" action="livres">
 				<input type="hidden" name="numPageLivres" value="<%= numPage %>">
+				<input type="hidden" name="action" value="nextLivres">
 				<input type="submit" value="suivant">
 			</form>
 			
 			<p>AJOUT</p>
-			<form method="post" action="ajoutLivre">
+			<form method="post" action="livres">
+				<input type="hidden" name="action" value="addLivre">
 				<table>
 					<caption>Formulaire d'ajout</caption>
 					<tr>

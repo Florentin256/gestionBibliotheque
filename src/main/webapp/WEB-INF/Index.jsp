@@ -12,8 +12,8 @@
 	<h1>Gestion Bibliothèque</h1><a href="deconnexion">Deconnexion</a>
 	<hr>
 	
-	<a href="indexAuteur">Auteurs</a>
-	<a href="indexLivre">Livres</a>
+	<a href="auteurs">Auteurs</a>
+	<a href="livres">Livres</a>
 	
 	<hr>
 	
@@ -21,7 +21,6 @@
 		if (request.getAttribute("indexChoix")!=null && request.getAttribute("indexChoix").equals("indexAuteur")) {
 	%>
 			<%@include file="vueAuteur.jsp" %>
-			
 	<%
 		} else if (request.getAttribute("indexChoix")!=null && request.getAttribute("indexChoix").equals("indexLivre")) {
 	%>
