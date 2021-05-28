@@ -8,7 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	
+
 	<form method='post' action='auteurs'>
 		<input type='hidden' name='action' value='putAuteur'>
 		<input type='hidden' name='id' value='${ auteur.getId() }'>
