@@ -8,17 +8,14 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<%
-	Livre mod = (Livre)request.getAttribute("livre");
-	%>
 	
 	<form method='post' action='livres'>
 		<input type='hidden' name='action' value='putLivre'>
-		<input type='hidden' name='id' value='<%= mod.getId() %>'>
-		Titre: <input type='text' name='titre' value='<%= mod.getTitre() %>'>
-		Date de parution: <input type='date' name='dateParution' value='<%= mod.getDateParution() %>'>
-		Auteur: <%= mod.getAuteur().getNom() %> <%= mod.getAuteur().getPrenom() %>
-		<input type='number' name='id_auteur' required>
+		<input type='hidden' name='id' value='${livre.getId()}'>
+		Titre: <input type='text' name='titre' value='${livre.getTitre()}'>
+		Date de parution: <input type='date' name='dateParution' value='${livre.getDateParution()}'>
+		Auteur: ${livre.getAuteur().getNom()} ${livre.getAuteur().getPrenom()}
+		<input type='number' name='id_auteur' value='${livre.getAuteur().getId()}' required>
 		<input type='submit'>
 	</form>
 	

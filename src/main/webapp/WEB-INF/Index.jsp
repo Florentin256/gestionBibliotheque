@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@page import="beans.*,java.util.*" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -16,18 +17,15 @@
 	<a href="livres">Livres</a>
 	
 	<hr>
-	${indexChoix}
-	<%
-		if (request.getAttribute("indexChoix")!=null && request.getAttribute("indexChoix").equals("indexAuteur")) {
-	%>
+	
+	<c:choose>
+		<c:when test='${ not empty indexChoix && indexChoix == "indexAuteur" }'>
 			<%@include file="vueAuteur.jsp" %>
-	<%
-		} else if (request.getAttribute("indexChoix")!=null && request.getAttribute("indexChoix").equals("indexLivre")) {
-	%>
+		</c:when>
+		<c:when test='${ not empty indexChoix && indexChoix == "indexLivre" }'>
 			<%@include file="vueLivre.jsp" %>
-	<%
-		}
-	%>
+		</c:when>
+	</c:choose>
 	
 </body>
 </html>
