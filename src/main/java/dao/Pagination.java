@@ -1,12 +1,12 @@
 package dao;
 
 /**
- * Class contenant les paramètres de pagination
+ * Class contenant les parametres de pagination
  * 
  * @param offset
- * 			numéro de page
+ * 			numero de page
  * @param limit
- * 			nombre de résultats par page
+ * 			nombre de resultats par page
  * @param orderBy
  * 			nom de la colonne dans la base permettant de trier
  */
