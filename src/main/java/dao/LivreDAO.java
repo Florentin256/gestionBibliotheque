@@ -13,15 +13,13 @@ import beans.Livre;
 
 public class LivreDAO implements DAO<Livre, Integer> {
 	
-	public LivreDAO() {}
-	
 	/**
-	 * Ajoute un tag à un livre donné par son id.
+	 * Ajoute un tag ï¿½ un livre donne par son id.
 	 * 
 	 * @param id
 	 * 			L'id du livre dans la table tag
 	 * @param tag
-	 * 			Le tag à ajouter dans la BD
+	 * 			Le tag a ajouter dans la BD
 	 * @throws DaoException
 	 */
 	public void addTagToBookById(int id, String tag) throws DaoException {
@@ -34,27 +32,27 @@ public class LivreDAO implements DAO<Livre, Integer> {
 		}
 	}
 	
-	// Méthode private, appelée dans une méthode de la classe this
+	// Methode private, appelee dans une methode de la classe this
 	/**
-	 * Retourne une liste de tags associés au livre donné par son id.
+	 * Retourne une liste de tags associes au livre donne par son id.
 	 * 
-	 * @param id_livre
+	 * @param idLivre
 	 * @return
 	 * @throws SQLException
 	 * @throws NamingException
 	 * @throws DaoException 
 	 */
-	private ArrayList<String> getTagOfBookById(int id_livre) throws DaoException {
-		ArrayList<String> tags = new ArrayList<String>();
+	private ArrayList<String> getTagOfBookById(int idLivre) throws DaoException {
+		ArrayList<String> tags = new ArrayList<>();
 		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT libelle FROM tag WHERE id_livre=?")) {
-			stmt.setInt(1, id_livre);
+			stmt.setInt(1, idLivre);
 			try (ResultSet rs = stmt.executeQuery()) {
 				while(rs.next()) {
 					tags.add(rs.getString("libelle"));
 				}
 			}
 		} catch(SQLException e) {
-			throw new DaoException("Echec lors de la récupération des tags du livre", e);
+			throw new DaoException("Echec lors de la recuperation des tags du livre", e);
 		}
 		return tags;
 	}
@@ -69,18 +67,18 @@ public class LivreDAO implements DAO<Livre, Integer> {
 			stmt.setInt(1, id);
 			try (ResultSet rs = stmt.executeQuery()) {
 				rs.next();
-				AuteurDAO Adao = new AuteurDAO();
-				livreTemp = new Livre((int)id, rs.getString("titre"), Adao.getById(rs.getInt("auteur")), rs.getDate("date_parution"), getTagOfBookById((int)id));
+				AuteurDAO auteurDao = new AuteurDAO();
+				livreTemp = new Livre(id, rs.getString("titre"), auteurDao.getById(rs.getInt("auteur")), rs.getDate("date_parution"), getTagOfBookById((int)id));
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la récupération du livre par son id", e);
+			throw new DaoException("Echec lors de la recuperation du livre par son id", e);
 		}
 		return livreTemp;
 	}
 
 	@Override
 	public List<Livre> getAll(Pagination pagination) throws DaoException {
-		ArrayList<Livre> listLivres = new ArrayList<Livre>();
+		ArrayList<Livre> listLivres = new ArrayList<>();
 		String query = "SELECT * FROM livre limit ? offset ?";
 		if (pagination.getOrderBy() != null) {
 			query = "SELECT * FROM livre order by " + pagination.getOrderBy() + " limit ? offset ? ";
@@ -90,14 +88,14 @@ public class LivreDAO implements DAO<Livre, Integer> {
 			stmt.setInt(2, pagination.getOffset()*pagination.getLimit());
 			try (ResultSet rs = stmt.executeQuery()) {
 				while(rs.next()) {
-					AuteurDAO Adao = new AuteurDAO();
+					AuteurDAO auteurDao = new AuteurDAO();
 					int id = rs.getInt("id");
-					Livre livreTemp = new Livre(id, rs.getString("titre"), Adao.getById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
+					Livre livreTemp = new Livre(id, rs.getString("titre"), auteurDao.getById(rs.getInt("auteur")),rs.getDate("date_parution"), getTagOfBookById(id));
 					listLivres.add(livreTemp);
 				}
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la réupération de la liste des livres", e);
+			throw new DaoException("Echec lors de la reuperation de la liste des livres", e);
 		}
 		return listLivres;
 	}
@@ -119,7 +117,7 @@ public class LivreDAO implements DAO<Livre, Integer> {
 	}
 
 	/**
-	 * La suppression d'un Livre entraine la suppression de tous les tags associés.
+	 * La suppression d'un Livre entraine la suppression de tous les tags associes.
 	 */
 	@Override
 	public void remove(Integer id) throws DaoException {
@@ -140,7 +138,31 @@ public class LivreDAO implements DAO<Livre, Integer> {
 			stmt.setInt(4, (int) entity.getId());
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new DaoException("Echec de la mise à jour du livre dans la base", e);
+			throw new DaoException("Echec de la mise a jour du livre dans la base", e);
 		}
+	}
+	
+	/**
+	 * Renvoie le nombre de page en fonction du nombre d'entites a afficher par page
+	 * 
+	 * @param limit
+	 * 			nombre d'entites par page
+	 * @return
+	 * @throws DaoException
+	 */
+	public int nbTotalPages(int limit) throws DaoException {
+		int res = 0;
+		try (Statement stmt = ConnectionHandler.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT count(*) FROM livre")) {
+			rs.next();
+			int nbTotalEntites = rs.getInt("count");
+			res = nbTotalEntites / limit;
+			if (nbTotalEntites % limit != 0) {
+				res += 1;
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec de la requÃªte");
+		}
+		return res;
 	}
 }

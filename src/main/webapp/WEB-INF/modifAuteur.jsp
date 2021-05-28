@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <%@page import="beans.*,java.util.*" %>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
@@ -10,13 +10,15 @@
 <body>
 	<%
 	Auteur mod = (Auteur)request.getAttribute("auteur");
-	
-	out.println("<form method='post' action='modifAuteur'>");
-	out.println("<input type='hidden' name='id' value='" + mod.getId() + "'>");
-	out.println("Nom: <input type='text' name='nom' value='" + mod.getNom() + "'>");
-	out.println("Prenom: <input type='text' name='prenom' value='" + mod.getPrenom() + "'>");
-	out.println("<input type='submit'>");
-	out.println("</form>");
 	%>
+	
+	<form method='post' action='auteurs'>
+		<input type='hidden' name='action' value='putAuteur'>
+		<input type='hidden' name='id' value='<%= mod.getId() %>'>
+		Nom: <input type='text' name='nom' value='<%= mod.getNom() %>'>
+		Prenom: <input type='text' name='prenom' value='<%= mod.getPrenom() %>'>
+		<input type='submit'>
+	</form>
+
 </body>
 </html>

@@ -1,8 +1,14 @@
 package beans;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang3.StringUtils;
 
-public class User extends Entity<Integer> {
+public class User extends Entity<Integer> implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String nom;
 	private String prenom;
 	private String login;

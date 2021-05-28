@@ -1,13 +1,13 @@
 package beans;
 
-public abstract class Entity<Type> {
-	private Type id;
+public abstract class Entity<T> {
+	private T id;
 
-	public Type getId() {
+	public T getId() {
 		return id;
 	}
 
-	public void setId(Type id) {
+	public void setId(T id) {
 		this.id = id;
 	}
 }

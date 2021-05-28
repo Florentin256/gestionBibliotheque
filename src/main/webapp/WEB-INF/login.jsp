@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
 <meta charset="UTF-8">
 <title>Login</title>
@@ -13,11 +13,11 @@
 	<form method="post" action="login">
 		<table>
 			<tr>
-				<td>login</td>
+				<th id=null>login</th>
 				<td><input type="text" name="login"></td>
 			</tr>
 			<tr>
-				<td>password</td>
+				<th id=null>password</th>
 				<td><input type="password" name="password"></td>
 			</tr>
 		</table>

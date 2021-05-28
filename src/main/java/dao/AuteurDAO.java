@@ -12,8 +12,6 @@ import beans.Auteur;
 
 public class AuteurDAO implements DAO<Auteur, Integer> {
 	
-	public AuteurDAO() {}
-
 	@Override
 	public Auteur getById(Integer id) throws DaoException {
 		Auteur auteurTemp = null;
@@ -21,17 +19,17 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 			stmt.setInt(1, id);
 			try (ResultSet rs = stmt.executeQuery()) {
 				rs.next();
-				auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), (int)id);
+				auteurTemp = new Auteur(rs.getString("nom"), rs.getString("prenom"), id);
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la récupération de l'auteur par son id", e);
+			throw new DaoException("Echec lors de la recuperation de l'auteur par son id", e);
 		}
 		return auteurTemp;
 	}
 	
 	@Override
 	public List<Auteur> getAll(Pagination pagination) throws DaoException {
-		ArrayList<Auteur> listAuteurs = new ArrayList<Auteur>();
+		ArrayList<Auteur> listAuteurs = new ArrayList<>();
 		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("SELECT * FROM auteur limit ? offset ?")) {
 			stmt.setInt(1, pagination.getLimit());
 			stmt.setInt(2, pagination.getOffset()*pagination.getLimit());
@@ -42,7 +40,7 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 				}
 			}
 		} catch (SQLException e) {
-			throw new DaoException("Echec lors de la récupération de la liste des auteurs", e);
+			throw new DaoException("Echec lors de la recuperation de la liste des auteurs", e);
 		}
 		return listAuteurs;
 	}
@@ -70,14 +68,10 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 	public void remove(Integer id) throws DaoException {
 		try (PreparedStatement stmt = ConnectionHandler.getConnection().prepareStatement("DELETE FROM auteur WHERE id=?")) {
 			stmt.setInt(1, (int)id);
-			try {
-				stmt.executeUpdate();
-			} catch (SQLException e) {
-				// Ne peut pas etre supprime car dependance d'un livre
-				throw new DaoException("L'auteur est une dépendance d'un livre, suppression impossible");
-			}
+			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new DaoException("Echec de la suppression de l'auteur dans la base", e);
+			throw new DaoException("Echec de la suppression de l'auteur dans la base\n"
+					+ "L'auteur est une dependance d'un livre, suppression impossible", e);
 		}
 	}
 
@@ -89,8 +83,32 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 			stmt.setInt(3, (int) entity.getId());
 			stmt.executeUpdate();
 		} catch (SQLException e) {
-			throw new DaoException("Echec de la mise à jour de l'auteur dans la base", e);
+			throw new DaoException("Echec de la mise a jour de l'auteur dans la base", e);
 		}
+	}
+	
+	/**
+	 * Renvoie le nombre de page en fonction du nombre d'entites a afficher par page
+	 * 
+	 * @param limit
+	 * 			nombre d'entites par page
+	 * @return
+	 * @throws DaoException
+	 */
+	public int nbTotalPages(int limit) throws DaoException {
+		int res = 0;
+		try (Statement stmt = ConnectionHandler.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT count(*) FROM auteur")) {
+			rs.next();
+			int nbTotalEntites = rs.getInt("count");
+			res = nbTotalEntites / limit;
+			if (nbTotalEntites % limit != 0) {
+				res += 1;
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec de la requÃªte");
+		}
+		return res;
 	}
 
 }
