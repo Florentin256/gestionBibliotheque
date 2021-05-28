@@ -21,12 +21,48 @@ public class AuteurController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private final AuteurDAO auteurDao = new AuteurDAO();
 	
+	private final int LIMIT = 10;
+	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 
 		if(session.getAttribute(UserController.APP_USER) != null) {
-			synchroIndex(req, resp, 0);
+			
+			String action = req.getParameter("action");
+			if (action == null) {
+				action = "";
+			}
+			String numPageStr = req.getParameter("numPage");
+			int numPage = 0;
+			if (numPageStr != null) {
+				numPage = Integer.parseInt(numPageStr);
+			}
+			
+			switch (action) {
+			case "next":
+				int nbPages = 0;
+				try {
+					nbPages = auteurDao.nbTotalPages(LIMIT);
+				} catch (DaoException e) {
+					e.printStackTrace();
+				}
+				numPage += 1;
+				if (numPage >= nbPages) {
+					numPage = nbPages-1;
+				}
+				configParameterForIndex(req, resp, numPage);
+				break;
+			case "prev":
+				numPage -= 1;
+				if (numPage < 0) {
+					numPage = 0;
+				}
+				configParameterForIndex(req, resp, numPage);
+				break;
+			default:
+				configParameterForIndex(req, resp, 0);
+			}
 			req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 		}
 	}
@@ -37,86 +73,110 @@ public class AuteurController extends HttpServlet {
 
 		if(session.getAttribute(UserController.APP_USER) != null) {
 			
-			String action = "";
-			if (req.getParameter("action") != null) {
-				action = req.getParameter("action");
+			String action = req.getParameter("action");
+			if (action == null) {
+				action = "";
 			}
 			
-			if (action.equals("addAuteur")) {
+			switch (action) {
+			case "addAuteur":
 				try {
-					Auteur ajout = new Auteur(req.getParameter("nom"), req.getParameter("prenom"));
-					auteurDao.add(ajout);
-					synchroIndex(req, resp, 0);
-					req.getRequestDispatcher("WEB-INF/Index.jsp?indexChoix=indexAuteur").forward(req,resp);
+					String nom = req.getParameter("nom");
+					String prenom = req.getParameter("prenom");
+					if (nom != null && prenom != null) {
+						Auteur ajout = new Auteur(nom, prenom);
+						auteurDao.add(ajout);
+						configParameterForIndex(req, resp, 0);
+						req.getRequestDispatcher("WEB-INF/Index.jsp?indexChoix=indexAuteur").forward(req,resp);
+					} else {
+						req.setAttribute("error", "Paramètre(s) manquant(s) pour l'ajout");
+						req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
+					}
 				} catch (DaoException | ServletException | IOException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
+				break;
 				
-			} else if (action.equals("putAuteur")) {
+			case "putAuteur" :
 				try {
-					Auteur mod = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
-					mod.setNom(req.getParameter("nom"));
-					mod.setPrenom(req.getParameter("prenom"));
-					auteurDao.update(mod);
-					synchroIndex(req, resp, 0);
-					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
-				} catch (NumberFormatException | DaoException e) {
-					req.setAttribute("error", e);
-					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
-				}
-				
-			} else if (action.equals("nextAuteurs")) {
-				try {
-					int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) + 1;
-					synchroIndex(req, resp, numPage);
-					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
-				} catch (NumberFormatException | ServletException | IOException e) {
-					req.setAttribute("error", e);
-					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
-				}
-				
-			} else if (action.equals("previousAuteurs")) {
-				try {
-					int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) - 1;
-					if (numPage < 0) {
-						numPage = 0;
+					String idStr = req.getParameter("id");
+					String nom = req.getParameter("nom");
+					String prenom = req.getParameter("prenom");
+					if (idStr != null && nom != null && prenom != null) {
+						Auteur mod = auteurDao.getById(Integer.parseInt(idStr));
+						mod.setNom(nom);
+						mod.setPrenom(prenom);
+						auteurDao.update(mod);
+						configParameterForIndex(req, resp, 0);
+						req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+					} else {
+						req.setAttribute("error", "Paramètre(s) manquant(s) pour la mise à jour");
+						req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 					}
-					synchroIndex(req, resp, numPage);
-					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
-				} catch (NumberFormatException | ServletException | IOException e) {
-					req.setAttribute("error", e);
-					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
-				}
-				
-			} else if (action.equals("supprimer")) {
-				try {
-					auteurDao.remove(Integer.parseInt(req.getParameter("id")));
-					synchroIndex(req, resp, 0);
-					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
+				break;
 				
-			} else if (action.equals("modifier")) {
+			case "supprimer":
 				try {
-					Auteur mod = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
-					req.setAttribute("auteur", mod);
-					req.getRequestDispatcher("/WEB-INF/modifAuteur.jsp").forward(req,resp);
+					String idStr = req.getParameter("id");
+					if (idStr != null) {
+						auteurDao.remove(Integer.parseInt(idStr));
+						configParameterForIndex(req, resp, 0);
+						req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
+					} else {
+						req.setAttribute("error", "Paramètre(s) manquant(s) pour la suppression");
+						req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
+					}
 				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
+				break;
+				
+			case "modifier":
+				try {
+					String idStr = req.getParameter("id");
+					if (idStr != null) {
+						Auteur mod = auteurDao.getById(Integer.parseInt(idStr));
+						req.setAttribute("auteur", mod);
+						req.getRequestDispatcher("/WEB-INF/modifAuteur.jsp").forward(req,resp);
+					} else {
+						req.setAttribute("error", "Paramètre(s) manquant(s) pour la mise à jour");
+						req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
+					}
+				} catch (NumberFormatException | DaoException e) {
+					req.setAttribute("error", e);
+					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
+				}
+				break;
+			
+			default:
+				configParameterForIndex(req, resp, 0);
+				req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
 			}
 		}
 	}
 	
-	private void synchroIndex(HttpServletRequest req, HttpServletResponse resp, int numPage) throws ServletException, IOException {
+	/**
+	 * Configure les parametres a setter pour retourner sur l'index de la derniere entite choisie
+	 * a la page indique par 'numPage'
+	 * 
+	 * @param req
+	 * @param resp
+	 * @param numPage
+	 * 			numero de page a configurer
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	private void configParameterForIndex(HttpServletRequest req, HttpServletResponse resp, int numPage) throws ServletException, IOException {
 		try {
 			req.setAttribute("indexChoix", "indexAuteur");
 			req.setAttribute("numPageAuteurs", numPage);
-			ArrayList<Auteur> listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(numPage, 10));
+			ArrayList<Auteur> listAuteursOffset = (ArrayList<Auteur>) auteurDao.getAll(new Pagination(numPage, LIMIT));
 			req.setAttribute("auteursOffset", listAuteursOffset);
 		} catch (DaoException e) {
 			req.setAttribute("error", e);

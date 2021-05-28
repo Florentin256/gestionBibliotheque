@@ -16,7 +16,7 @@
 	<a href="livres">Livres</a>
 	
 	<hr>
-	
+	${indexChoix}
 	<%
 		if (request.getAttribute("indexChoix")!=null && request.getAttribute("indexChoix").equals("indexAuteur")) {
 	%>

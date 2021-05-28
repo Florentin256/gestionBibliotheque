@@ -52,11 +52,8 @@
 	</table>
 	
 	<!-- Boutons de pagination -->
-	<form method="post" action="livres">
-		<input type="hidden" name="numPageLivres" value="<%= numPage %>">
-		<input type="submit" name="action" value="previousLivres">
-		<input type="submit" name="action" value="nextLivres">
-	</form>
+	<a href="livres?numPage=<%= numPage %>&action=prev">precedent</a>
+	<a href="livres?numPage=<%= numPage %>&action=next">suivant</a>
 	
 	<br><br>
 	

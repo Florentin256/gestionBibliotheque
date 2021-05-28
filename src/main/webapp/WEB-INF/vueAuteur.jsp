@@ -40,11 +40,8 @@
 	</table>
 	
 	<!-- Boutons de pagination -->
-	<form method="post" action="auteurs">
-		<input type="hidden" name="numPageAuteurs" value="<%= numPage %>">
-		<input type="submit" name="action" value="previousAuteurs">
-		<input type="submit" name="action" value="nextAuteurs">
-	</form>
+	<a href="auteurs?numPage=<%= numPage %>&action=prev">precedent</a>
+	<a href="auteurs?numPage=<%= numPage %>&action=next">suivant</a>
 	
 	<br><br>
 

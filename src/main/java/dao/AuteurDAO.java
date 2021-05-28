@@ -86,5 +86,29 @@ public class AuteurDAO implements DAO<Auteur, Integer> {
 			throw new DaoException("Echec de la mise a jour de l'auteur dans la base", e);
 		}
 	}
+	
+	/**
+	 * Renvoie le nombre de page en fonction du nombre d'entites a afficher par page
+	 * 
+	 * @param limit
+	 * 			nombre d'entites par page
+	 * @return
+	 * @throws DaoException
+	 */
+	public int nbTotalPages(int limit) throws DaoException {
+		int res = 0;
+		try (Statement stmt = ConnectionHandler.getConnection().createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT count(*) FROM auteur")) {
+			rs.next();
+			int nbTotalEntites = rs.getInt("count");
+			res = nbTotalEntites / limit;
+			if (nbTotalEntites % limit != 0) {
+				res += 1;
+			}
+		} catch (SQLException e) {
+			throw new DaoException("Echec de la requête");
+		}
+		return res;
+	}
 
 }

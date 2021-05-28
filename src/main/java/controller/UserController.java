@@ -25,9 +25,9 @@ public class UserController extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		HttpSession session = req.getSession(true);
 		
-		String action = "";
-		if (req.getParameter("action") != null) {
-			action = req.getParameter("action");
+		String action = req.getParameter("action");
+		if (action == null) {
+			action = "";
 		}
 		
 		if(session.getAttribute(APP_USER) == null || action.equals("deconnexion")) {
