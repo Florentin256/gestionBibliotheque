@@ -36,6 +36,12 @@
 	    <artifactId>commons-lang3</artifactId>
 	    <version>3.10</version>
 	</dependency>
+	
+	<dependency>
+    	<groupId>javax.servlet</groupId>
+    	<artifactId>jstl</artifactId>
+    	<version>1.2</version>
+	</dependency>
 
   </dependencies>
   

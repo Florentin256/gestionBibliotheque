@@ -8,15 +8,12 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<%
-	Auteur mod = (Auteur)request.getAttribute("auteur");
-	%>
-	
+
 	<form method='post' action='auteurs'>
 		<input type='hidden' name='action' value='putAuteur'>
-		<input type='hidden' name='id' value='<%= mod.getId() %>'>
-		Nom: <input type='text' name='nom' value='<%= mod.getNom() %>'>
-		Prenom: <input type='text' name='prenom' value='<%= mod.getPrenom() %>'>
+		<input type='hidden' name='id' value='${ auteur.getId() }'>
+		Nom: <input type='text' name='nom' value='${ auteur.getNom() }'>
+		Prenom: <input type='text' name='prenom' value='${ auteur.getPrenom() }'>
 		<input type='submit'>
 	</form>
 
