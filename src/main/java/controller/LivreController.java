@@ -47,20 +47,15 @@ public class LivreController extends HttpServlet {
 			}
 			
 			if(action.equals("addLivre")) {
-				Auteur aut = null;
 				try {
-					aut = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
-				} catch (NumberFormatException | DaoException e1) {
-					e1.printStackTrace();
-				}
-				String dateStr = req.getParameter("dateParution");
-				java.sql.Date date = java.sql.Date.valueOf(dateStr);
-				Livre ajout = new Livre(req.getParameter("titre"), aut, date);
-				try {
+					Auteur aut = auteurDao.getById(Integer.parseInt(req.getParameter("id")));
+					String dateStr = req.getParameter("dateParution");
+					java.sql.Date date = java.sql.Date.valueOf(dateStr);
+					Livre ajout = new Livre(req.getParameter("titre"), aut, date);
 					livreDao.add(ajout);
 					synchroIndex(req, resp, 0);
 					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
-				} catch (DaoException e) {
+				} catch (NumberFormatException | DaoException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
@@ -76,9 +71,8 @@ public class LivreController extends HttpServlet {
 				}
 				
 			} else if(action.equals("modifier")) {
-				Livre mod = null;
 				try {
-					mod = livreDao.getById(Integer.parseInt(req.getParameter("id")));
+					Livre mod = livreDao.getById(Integer.parseInt(req.getParameter("id")));
 					req.setAttribute("livre", mod);
 					req.getRequestDispatcher("WEB-INF/modifLivre.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
@@ -87,9 +81,8 @@ public class LivreController extends HttpServlet {
 				}
 				
 			} else if(action.equals("Ajouter des Tags")) {
-				ArrayList<String> tags = null;
 				try {
-					tags = (ArrayList<String>) livreDao.getById(Integer.parseInt(req.getParameter("id"))).getTags();
+					ArrayList<String> tags = (ArrayList<String>) livreDao.getById(Integer.parseInt(req.getParameter("id"))).getTags();
 					req.setAttribute("tagsLivre", tags);
 					req.getRequestDispatcher("WEB-INF/ajouterTagLivre.jsp").forward(req,resp);
 				} catch (NumberFormatException | DaoException e) {
@@ -150,15 +143,15 @@ public class LivreController extends HttpServlet {
 	}
 	
 	private void synchroIndex(HttpServletRequest req, HttpServletResponse resp, int numPage) throws ServletException, IOException {
-		req.setAttribute("indexChoix", "indexLivre");
-		req.setAttribute("numPageLivres", numPage);
-		ArrayList<Livre> listLivresOffset = null;
 		try {
+			req.setAttribute("indexChoix", "indexLivre");
+			req.setAttribute("numPageLivres", numPage);
+			ArrayList<Livre> listLivresOffset = null;
 			listLivresOffset = (ArrayList<Livre>) livreDao.getAll(new Pagination(numPage, 10, "date_parution"));
+			req.setAttribute("livresOffset", listLivresOffset);
 		} catch (DaoException e) {
 			req.setAttribute("error", e);
 			req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 		}
-		req.setAttribute("livresOffset", listLivresOffset);
 	}
 }
