@@ -48,7 +48,7 @@ public class AuteurController extends HttpServlet {
 					auteurDao.add(ajout);
 					synchroIndex(req, resp, 0);
 					req.getRequestDispatcher("WEB-INF/Index.jsp?indexChoix=indexAuteur").forward(req,resp);
-				} catch (DaoException e) {
+				} catch (DaoException | ServletException | IOException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
@@ -71,7 +71,7 @@ public class AuteurController extends HttpServlet {
 					int numPage = Integer.parseInt(req.getParameter("numPageAuteurs")) + 1;
 					synchroIndex(req, resp, numPage);
 					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
-				} catch (NumberFormatException e) {
+				} catch (NumberFormatException | ServletException | IOException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
@@ -84,7 +84,7 @@ public class AuteurController extends HttpServlet {
 					}
 					synchroIndex(req, resp, numPage);
 					req.getRequestDispatcher("WEB-INF/Index.jsp").forward(req,resp);
-				} catch (NumberFormatException e) {
+				} catch (NumberFormatException | ServletException | IOException e) {
 					req.setAttribute("error", e);
 					req.getRequestDispatcher("WEB-INF/errorPage.jsp").forward(req,resp);
 				}
